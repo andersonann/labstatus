@@ -16,6 +16,7 @@
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;
   background-image:radial-gradient(ellipse at 80% 0%,rgba(255,179,0,.04) 0%,transparent 60%);}
 
+/* HEADER */
 header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;
   align-items:center;justify-content:space-between;background:rgba(13,20,33,.95);
   backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
@@ -41,6 +42,9 @@ header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;
 .btn-success{background:var(--green);color:#000;border:none;border-radius:7px;
   padding:8px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;}
 .btn-success:hover{background:#00bb55;}
+.btn-txt{background:transparent;border:1px solid var(--yellow);color:var(--yellow);
+  border-radius:7px;padding:8px 16px;font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .15s;}
+.btn-txt:hover{background:rgba(255,179,0,.08);}
 
 /* STATUS BAR */
 .status-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;
@@ -50,6 +54,7 @@ header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;
 .sdot-ok{background:var(--green);}
 .sdot-warn{background:var(--yellow);}
 .sdot-err{background:var(--red);}
+.sync-lbl{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
 
 /* SUMMARY */
 .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
@@ -87,8 +92,8 @@ header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;
 .data-wrap{overflow-x:auto;padding:0 18px 16px;}
 table{width:100%;border-collapse:collapse;margin-top:12px;}
 thead th{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px;
-  text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;
-  white-space:nowrap;}
+  text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);
+  text-transform:uppercase;white-space:nowrap;}
 tbody tr{border-bottom:1px solid rgba(30,45,69,.4);}
 tbody tr:last-child{border-bottom:none;}
 tbody tr:hover{background:rgba(0,212,255,.02);}
@@ -101,35 +106,102 @@ tbody tr:hover{background:rgba(0,212,255,.02);}
   font-size:12px;outline:none;transition:border-color .2s;}
 .cell-in input:focus{border-color:var(--accent);}
 .cell-in input.filled{border-color:rgba(0,230,118,.5);}
-.cell-in input.empty-err{border-color:var(--red)!important;background:rgba(255,68,68,.05);}
 .cell-in input::placeholder{color:var(--muted);font-size:11px;}
 .cell-st{padding:6px 10px;font-size:11px;font-family:var(--font-mono);}
-.st-ok  {color:var(--green);}
-.st-warn{color:var(--yellow);}
+.st-ok{color:var(--green);}
 .st-muted{color:var(--muted);}
-
 .mr-note{font-size:10px;color:var(--muted);font-family:var(--font-mono);
   padding:6px 18px 12px;border-top:1px dashed var(--border);margin-top:4px;}
 
-/* BACK BTN TOAST */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;
-  border-radius:10px;padding:12px 18px;font-family:var(--font-mono);font-size:12px;
-  display:none;z-index:300;box-shadow:0 4px 20px rgba(0,230,118,.3);}
-.toast.show{display:block;animation:fadeIn .3s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* ═══════════════════════════════
+   HISTORIAL
+═══════════════════════════════ */
+.hist-section{margin-top:44px;padding-top:32px;border-top:1px solid var(--border);}
+.hist-header{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;flex-wrap:wrap;gap:12px;}
+.hist-title{font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  letter-spacing:3px;text-transform:uppercase;}
+.search-wrap{position:relative;flex:1;max-width:380px;}
+.search-wrap input{
+  width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-mono);
+  font-size:12px;outline:none;transition:border-color .2s;}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-wrap input::placeholder{color:var(--muted);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:13px;pointer-events:none;}
 
-/* EMPTY */
+/* HIST CARD */
+.hist-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
+.hist-card:hover{border-color:#2a3f5f;}
+.hist-card.hist-open{border-color:#2a3f5f;}
+.hist-row{display:flex;align-items:center;padding:12px 16px;gap:12px;
+  cursor:pointer;user-select:none;}
+.hist-code{font-family:var(--font-mono);font-size:13px;color:var(--accent);
+  font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:2px;}
+.hist-params{display:flex;gap:4px;flex-wrap:wrap;max-width:300px;}
+.hist-chip{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:4px;
+  border:1px solid var(--yellow);color:var(--yellow);background:rgba(255,179,0,.06);white-space:nowrap;}
+.hist-arr{color:var(--muted);font-size:11px;transition:transform .2s;flex-shrink:0;}
+.hist-card.hist-open .hist-arr{transform:rotate(90deg);}
+.hist-body{border-top:1px solid var(--border);display:none;padding:16px;background:rgba(0,0,0,.1);}
+.hist-body.open{display:block;}
+
+/* Read-only hist table */
+.hist-param-title{font-family:var(--font-mono);font-size:11px;color:var(--yellow);
+  font-weight:700;margin:14px 0 7px;letter-spacing:1px;}
+.hist-param-title:first-child{margin-top:0;}
+.hist-table{width:100%;border-collapse:collapse;margin-bottom:4px;}
+.hist-table th{font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  letter-spacing:1px;text-align:left;padding:6px 8px;
+  border-bottom:1px solid var(--border);text-transform:uppercase;}
+.hist-table td{padding:7px 8px;font-family:var(--font-mono);font-size:12px;
+  border-bottom:1px solid rgba(30,45,69,.3);}
+.hist-table td:last-child{border-bottom:none;}
+.hist-table tbody tr:last-child td{border-bottom:none;}
+.hist-table td:first-child{color:var(--accent);font-weight:700;}
+.td-lec{color:var(--green);}
+.td-mr{color:var(--yellow);}
+.td-empty{color:var(--muted);}
+.hist-actions{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.btn-hist-txt{background:transparent;border:1px solid var(--yellow);color:var(--yellow);
+  border-radius:6px;padding:5px 13px;font-size:11px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
+.btn-hist-txt:hover{background:rgba(255,179,0,.08);}
+.btn-hist-del{background:transparent;border:1px solid var(--border);color:var(--muted);
+  border-radius:6px;padding:5px 13px;font-size:11px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
+.btn-hist-del:hover{border-color:var(--red);color:var(--red);}
+.hist-loading{font-family:var(--font-mono);font-size:11px;color:var(--muted);
+  padding:20px;text-align:center;}
+.hist-empty{font-family:var(--font-mono);font-size:11px;color:var(--muted);
+  padding:30px;text-align:center;}
+
+/* EMPTY STATE */
 .empty-state{text-align:center;padding:60px 20px;}
 .empty-icon{font-size:40px;margin-bottom:14px;opacity:.3;}
 .empty-title{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;}
 .empty-sub{font-size:13px;color:var(--muted);line-height:1.6;}
 .empty-sub b{color:var(--text);}
 
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;
+  border-radius:10px;padding:12px 18px;font-family:var(--font-mono);font-size:12px;
+  display:none;z-index:300;box-shadow:0 4px 20px rgba(0,230,118,.3);max-width:280px;}
+.toast.show{display:block;animation:fadeIn .3s ease;}
+.toast.err{background:var(--red);color:#fff;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
 @media print{
-  header,.btn-row,.top-bar button,.btn-addcol,.btn-row{display:none!important;}
+  header,.btn-row,.top-bar button,.btn-addcol,.hist-section{display:none!important;}
   body{background:#fff;color:#000;}
   .table-card{border:1px solid #ccc;break-inside:avoid;}
   .cell-in input{border:1px solid #999;color:#000;background:#fff;}
+}
+@media(max-width:600px){
+  .hist-params{display:none;}
+  .btn-row{gap:5px;}
+  .btn-row button{padding:7px 10px;font-size:10px;}
 }
 </style>
 </head>
@@ -143,14 +215,17 @@ tbody tr:hover{background:rgba(0,212,255,.02);}
   </div>
 </header>
 
-<div class="toast" id="toast">✓ Parámetros marcados en Muestras</div>
+<div class="toast" id="toast"></div>
 
 <div class="container">
+
+  <!-- TOP BAR -->
   <div class="top-bar">
     <span class="page-title">⚗ Hoja de Análisis</span>
     <div class="btn-row">
-      <button class="btn-secondary" onclick="clearData()">✕ Limpiar datos</button>
+      <button class="btn-secondary" onclick="clearData()">✕ Limpiar</button>
       <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+      <button class="btn-txt"       onclick="exportTxt(null)">📄 Exportar TXT</button>
       <button class="btn-primary"   onclick="validateAll()">✓ Validar</button>
       <button class="btn-success"   onclick="pushResultsAndBack()">↩ Guardar y volver</button>
     </div>
@@ -161,6 +236,10 @@ tbody tr:hover{background:rgba(0,212,255,.02);}
     <div class="status-item"><div class="sdot sdot-ok"></div><span id="stTotal">—</span></div>
     <div class="status-item"><div class="sdot sdot-warn"></div><span id="stMissing">—</span></div>
     <div class="status-item"><div class="sdot sdot-err"></div><span id="stMR">—</span></div>
+    <div class="status-item" style="margin-left:auto">
+      <div class="sdot" id="syncDot" style="background:var(--green)"></div>
+      <span class="sync-lbl" id="syncLbl">listo</span>
+    </div>
   </div>
 
   <!-- SUMMARY -->
@@ -169,37 +248,89 @@ tbody tr:hover{background:rgba(0,212,255,.02);}
     <div class="result-grid" id="summaryGrid"></div>
   </div>
 
-  <!-- TABLES -->
+  <!-- ACTIVE TABLES -->
   <div id="tablesContainer"></div>
 
-  <!-- EMPTY -->
+  <!-- EMPTY STATE (no payload) -->
   <div class="empty-state" id="emptyState" style="display:none">
     <div class="empty-icon">⚗</div>
     <div class="empty-title">Sin muestras cargadas</div>
     <div class="empty-sub">Ve a <b>Muestras</b>, activa <b>Seleccionar</b>,<br>elige las órdenes y pulsa <b>⚗ Analizar</b>.</div>
   </div>
-</div>
+
+  <!-- ═══════════════════════════════════════
+       HISTORIAL DE ANÁLISIS
+  ════════════════════════════════════════ -->
+  <div class="hist-section">
+    <div class="hist-header">
+      <span class="hist-title">Historial de análisis</span>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="histSearch" placeholder="Buscar por código de muestra..." oninput="renderHistory()">
+      </div>
+    </div>
+    <div id="historyList"><div class="hist-loading">Cargando historial...</div></div>
+  </div>
+
+</div><!-- /container -->
 
 <script>
-// payload: [{orderId, orderCode, client, subCode, subId, params:[]}]
-let payload = [];
+// ════════════════════════════════════════
+//  SUPABASE CONFIG
+//  Necesitas crear la tabla analysis_history en Supabase:
+//
+//  CREATE TABLE analysis_history (
+//    id       TEXT PRIMARY KEY,
+//    codes    TEXT NOT NULL,
+//    saved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+//    data     TEXT NOT NULL
+//  );
+//  ALTER TABLE analysis_history ENABLE ROW LEVEL SECURITY;
+//  CREATE POLICY "allow_all" ON analysis_history FOR ALL USING (true) WITH CHECK (true);
+// ════════════════════════════════════════
+const SUPA_URL = "https://puwgkmjxystqfgubmtwv.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1d2drbWp4eXN0cWZndWJtdHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MzA2NTYsImV4cCI6MjA5MzAwNjY1Nn0.ZeV9g3p2dfdRuGguT9nrBUaqq2-RH8uZklhlOff2vxc";
 
-// tableData: {paramName: [{subCode, subId, lectura, mr, extra:{colName:val}}]}
-let tableData = {};
-// extraCols:  {paramName: [colName, ...]}
-let extraCols = {};
+const supaH = {
+  "Content-Type":  "application/json",
+  "apikey":        SUPA_KEY,
+  "Authorization": "Bearer " + SUPA_KEY
+};
+
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+let payload     = [];   // [{orderId,orderCode,client,subCode,subId,params:[]}]
+let tableData   = {};   // {paramName:[{subCode,subId,lectura,mr,extra:{}}]}
+let extraCols   = {};   // {paramName:[colName,...]}
+let histRecords = [];   // registros cargados desde Supabase
+let expandedHist= null; // id del hist-card abierto
+
+// ════════════════════════════════════════
+//  SYNC INDICATOR
+// ════════════════════════════════════════
+function setSyncStatus(s) {
+  const dot = document.getElementById('syncDot');
+  const lbl = document.getElementById('syncLbl');
+  dot.style.background = s==='syncing'?'var(--yellow)':s==='error'?'var(--red)':'var(--green)';
+  lbl.textContent = s==='syncing'?'guardando...':s==='error'?'error':'guardado';
+}
 
 // ════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════
 function init() {
   const raw = sessionStorage.getItem('analyze_payload');
-  if (!raw) { showEmpty(); return; }
-  try {
-    payload = JSON.parse(raw);
-    if (!payload.length) { showEmpty(); return; }
-    buildTables();
-  } catch(e) { showEmpty(); }
+  if (!raw) {
+    showEmpty();
+  } else {
+    try {
+      payload = JSON.parse(raw);
+      if (payload.length) buildTables();
+      else showEmpty();
+    } catch(e) { showEmpty(); }
+  }
+  loadHistory();
 }
 
 function showEmpty() {
@@ -208,25 +339,26 @@ function showEmpty() {
 }
 
 // ════════════════════════════════════════
-//  BUILD
+//  BUILD TABLES FROM PAYLOAD
 // ════════════════════════════════════════
 function buildTables() {
   document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('tablesContainer').style.display = 'block';
 
-  // Group by param
+  // Group samples by parameter
   const pm = {};
   payload.forEach(s => {
     s.params.forEach(p => {
       if (!pm[p]) pm[p] = [];
       if (!pm[p].find(x=>x.subId===s.subId))
-        pm[p].push({subCode:s.subCode, subId:s.subId, client:s.client});
+        pm[p].push({subCode:s.subCode, subId:s.subId});
     });
   });
 
   tableData = {};
   extraCols  = {};
   Object.entries(pm).forEach(([param, rows]) => {
-    tableData[param] = rows.map(r => ({subCode:r.subCode, subId:r.subId, lectura:'', mr:'', extra:{}}));
+    tableData[param] = rows.map(r=>({subCode:r.subCode, subId:r.subId, lectura:'', mr:'', extra:{}}));
     extraCols[param] = [];
   });
 
@@ -235,59 +367,49 @@ function buildTables() {
 }
 
 // ════════════════════════════════════════
-//  RENDER ALL TABLES
+//  RENDER ALL ACTIVE TABLES
 // ════════════════════════════════════════
 function renderAll() {
   const container = document.getElementById('tablesContainer');
   const params = Object.keys(tableData);
   if (!params.length) { showEmpty(); return; }
-  container.innerHTML = params.map(p => renderTable(p)).join('');
+  container.innerHTML = params.map(p=>renderTable(p)).join('');
 }
 
 function renderTable(param) {
-  const rows = tableData[param];
-  const ec   = extraCols[param]||[];
-  const allLec  = rows.every(r=>r.lectura.trim()!=='');
-  const hasMR   = rows.some(r=>r.mr.trim()!=='');
-  const stCls   = allLec&&hasMR?'ts-ok':!allLec?'ts-err':'ts-warn';
-  const stTxt   = allLec&&hasMR?'✓ Completo':!allLec?'⚠ Faltan lecturas':'⚠ Sin MR';
+  const rows   = tableData[param];
+  const ec     = extraCols[param]||[];
+  const allLec = rows.every(r=>r.lectura.trim()!=='');
+  const hasMR  = rows.some(r=>r.mr.trim()!=='');
+  const stCls  = allLec&&hasMR?'ts-ok':!allLec?'ts-err':'ts-warn';
+  const stTxt  = allLec&&hasMR?'✓ Completo':!allLec?'⚠ Faltan lecturas':'⚠ Sin MR';
 
   const extraTh = ec.map(col=>
-    `<th>${col} <button class="btn-addcol" style="padding:1px 5px;font-size:9px" onclick="removeCol('${esc(param)}','${esc(col)}')">✕</button></th>`
+    `<th>${esc(col)} <button class="btn-addcol" style="padding:1px 4px;font-size:9px"
+      onclick="removeCol('${esc(param)}','${esc(col)}')">✕</button></th>`
   ).join('');
 
   const rowsHtml = rows.map((r,i) => {
     const lFilled = r.lectura.trim()!=='';
-    const rSt     = lFilled ? 'st-ok' : 'st-muted';
-    const rTxt    = lFilled ? '✓' : '—';
-
-    const extraTd = ec.map(col =>
-      `<td class="cell-in">
-        <input type="text" value="${esc(r.extra[col]||'')}" placeholder="-"
-          oninput="setExtra('${esc(param)}',${i},'${esc(col)}',this.value)">
-      </td>`
+    const extraTd = ec.map(col=>
+      `<td class="cell-in"><input type="text" value="${esc(r.extra[col]||'')}" placeholder="-"
+        oninput="setExtra('${esc(param)}',${i},'${esc(col)}',this.value)"></td>`
     ).join('');
-
     return `
     <tr>
       <td class="cell-code">${esc(r.subCode)}</td>
       <td class="cell-in">
-        <input type="number" step="any" value="${esc(r.lectura)}"
-          placeholder="Lectura"
-          class="${lFilled?'filled':''}"
-          id="lec_${esc(param)}_${i}"
-          oninput="setLectura('${esc(param)}',${i},this.value)"
-          onchange="updateStatusBar()">
+        <input type="number" step="any" value="${esc(r.lectura)}" placeholder="Lectura"
+          class="${lFilled?'filled':''}" id="lec_${slugify(param)}_${i}"
+          oninput="setLectura('${esc(param)}',${i},this.value)">
       </td>
       <td class="cell-in">
-        <input type="number" step="any" value="${esc(r.mr)}"
-          placeholder="MR (opt.)"
+        <input type="number" step="any" value="${esc(r.mr)}" placeholder="MR (opt.)"
           class="${r.mr.trim()?'filled':''}"
-          oninput="setMR('${esc(param)}',${i},this.value)"
-          onchange="updateStatusBar()">
+          oninput="setMR('${esc(param)}',${i},this.value)">
       </td>
       ${extraTd}
-      <td class="cell-st ${rSt}">${rTxt}</td>
+      <td class="cell-st ${lFilled?'st-ok':'st-muted'}">${lFilled?'✓':'—'}</td>
     </tr>`;
   }).join('');
 
@@ -296,7 +418,7 @@ function renderTable(param) {
     <div class="table-card-header">
       <div>
         <div class="param-title">${esc(param)}</div>
-        <div class="param-meta">${rows.length} muestra${rows.length>1?'s':''}</div>
+        <div class="param-meta">${rows.length} muestra${rows.length!==1?'s':''}</div>
       </div>
       <div class="header-right">
         <button class="btn-addcol" onclick="addCol('${esc(param)}')">+ Columna</button>
@@ -305,13 +427,7 @@ function renderTable(param) {
     </div>
     <div class="data-wrap">
       <table>
-        <thead>
-          <tr>
-            <th>Muestra</th><th>Lectura</th><th>MR</th>
-            ${extraTh}
-            <th>Estado</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th>${extraTh}<th>Estado</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
     </div>
@@ -320,14 +436,12 @@ function renderTable(param) {
 }
 
 // ════════════════════════════════════════
-//  DATA SETTERS — no full re-render, just update model
-//  FIX #3: inputs update model directly, re-render only table status
+//  DATA SETTERS — actualizan modelo sin re-render completo
 // ════════════════════════════════════════
 function setLectura(param, idx, val) {
   tableData[param][idx].lectura = val;
-  // Update input class in-place without re-render
   const el = document.getElementById('lec_'+slugify(param)+'_'+idx);
-  if (el) el.className = val.trim() ? 'filled' : '';
+  if (el) el.className = val.trim()?'filled':'';
   updateTableStatus(param);
   updateStatusBar();
 }
@@ -354,30 +468,28 @@ function updateTableStatus(param) {
 
 function updateStatusBar() {
   const params = Object.keys(tableData);
-  let totalR=0, filledR=0, tabsMR=0;
-  params.forEach(p => {
-    tableData[p].forEach(r => { totalR++; if(r.lectura.trim()) filledR++; });
-    if (tableData[p].some(r=>r.mr.trim())) tabsMR++;
+  let totalR=0,filledR=0,tabsMR=0;
+  params.forEach(p=>{
+    tableData[p].forEach(r=>{ totalR++; if(r.lectura.trim()) filledR++; });
+    if(tableData[p].some(r=>r.mr.trim())) tabsMR++;
   });
-  const missing = totalR-filledR;
-  const mrOk    = tabsMR===params.length;
   const allSubs = new Set(payload.map(s=>s.subCode)).size;
-
   document.getElementById('stTotal').textContent   = `${allSubs} muestras · ${params.length} parámetros`;
-  document.getElementById('stMissing').textContent = missing>0 ? `${missing} lecturas faltantes` : '✓ Todas las lecturas ingresadas';
-  document.getElementById('stMR').textContent      = mrOk ? '✓ MR en todas las tablas' : `⚠ ${params.length-tabsMR} tabla(s) sin MR`;
+  document.getElementById('stMissing').textContent = totalR-filledR>0?`${totalR-filledR} lecturas faltantes`:'✓ Todas ingresadas';
+  document.getElementById('stMR').textContent      = tabsMR===params.length?'✓ MR en todas las tablas':`⚠ ${params.length-tabsMR} tabla(s) sin MR`;
 }
 
-// EXTRA COLS
+// ════════════════════════════════════════
+//  EXTRA COLUMNS
+// ════════════════════════════════════════
 function addCol(param) {
   const name = prompt('Nombre de columna (ej: Dilución, Abs):');
   if (!name?.trim()) return;
   const col = name.trim();
-  if (!extraCols[param].includes(col)) {
-    extraCols[param].push(col);
-    tableData[param].forEach(r=>{ r.extra[col]=''; });
-    reRenderTable(param);
-  }
+  if (extraCols[param].includes(col)) return;
+  extraCols[param].push(col);
+  tableData[param].forEach(r=>{ r.extra[col]=''; });
+  reRenderTable(param);
 }
 function removeCol(param, col) {
   extraCols[param] = extraCols[param].filter(c=>c!==col);
@@ -385,8 +497,11 @@ function removeCol(param, col) {
   reRenderTable(param);
 }
 function reRenderTable(param) {
-  const el = document.getElementById('tc_'+slugify(param));
-  if (el) el.outerHTML = renderTable(param);
+  const old = document.getElementById('tc_'+slugify(param));
+  if (!old) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = renderTable(param);
+  old.replaceWith(tmp.firstElementChild);
 }
 
 // ════════════════════════════════════════
@@ -395,18 +510,17 @@ function reRenderTable(param) {
 function validateAll() {
   const params = Object.keys(tableData);
   let ok=0,warn=0,err=0;
-  params.forEach(p => {
-    const rows   = tableData[p];
-    const allLec = rows.every(r=>r.lectura.trim()!=='');
-    const hasMR  = rows.some(r=>r.mr.trim()!=='');
-    if (allLec&&hasMR) ok++;
-    else if (!allLec)  err++;
-    else               warn++;
+  params.forEach(p=>{
+    const allLec=tableData[p].every(r=>r.lectura.trim()!=='');
+    const hasMR =tableData[p].some(r=>r.mr.trim()!=='');
+    if(allLec&&hasMR) ok++;
+    else if(!allLec)  err++;
+    else              warn++;
   });
-  renderAll(); // re-render to highlight empties
+  renderAll();
   const card = document.getElementById('summaryCard');
-  card.style.display = 'block';
-  document.getElementById('summaryGrid').innerHTML = `
+  card.style.display='block';
+  document.getElementById('summaryGrid').innerHTML=`
     <div class="result-item"><div class="result-num green">${ok}</div><div class="result-label">Tablas OK</div></div>
     <div class="result-item"><div class="result-num yellow">${warn}</div><div class="result-label">Sin MR</div></div>
     <div class="result-item"><div class="result-num red">${err}</div><div class="result-label">Incompletas</div></div>
@@ -415,48 +529,295 @@ function validateAll() {
 }
 
 // ════════════════════════════════════════
-//  FIX #5 — PUSH RESULTS BACK TO status-pro5.html
-//  For every row that has a lectura filled, mark that param as done on the sub
+//  EXPORTAR TXT
+//  record=null → usa datos actuales de pantalla
+//  record=obj  → usa datos de historial guardado
 // ════════════════════════════════════════
-function pushResultsAndBack() {
-  // Build results array: [{subId, paramName}] for filled rows only
-  const results = [];
-  Object.entries(tableData).forEach(([paramName, rows]) => {
+function exportTxt(record) {
+  const isHist  = record !== null;
+  const date    = isHist ? new Date(record.savedAt) : new Date();
+  const dateStr = date.toLocaleString('es-PE');
+  const data    = isHist ? record.tableData : tableData;
+  const ec      = isHist ? record.extraCols : extraCols;
+  const codes   = isHist
+    ? [...new Set(Object.values(data).flatMap(rows=>rows.map(r=>r.subCode)))]
+    : [...new Set(payload.map(s=>s.subCode))];
+
+  if (!Object.keys(data).length) {
+    showToast('⚠ Sin datos para exportar', true); return;
+  }
+
+  let txt = '==================================================\n';
+  txt    += '  LABSTATUS PRO — REPORTE DE ANÁLISIS\n';
+  txt    += `  Fecha    : ${dateStr}\n`;
+  txt    += `  Muestras : ${codes.join(', ')}\n`;
+  txt    += '==================================================\n\n';
+
+  Object.entries(data).forEach(([param, rows]) => {
+    txt += `PARÁMETRO: ${param}\n`;
+    txt += '─'.repeat(48) + '\n';
+    const cols = ['Muestra','Lectura','MR',...(ec[param]||[])];
+    // header row
+    txt += cols.map(c=>c.padEnd(16)).join('') + '\n';
+    txt += '─'.repeat(cols.length*16) + '\n';
     rows.forEach(r => {
-      if (r.lectura.trim()!=='') {
-        results.push({subId: r.subId, paramName});
-      }
+      const vals = [
+        (r.subCode||'').padEnd(16),
+        (r.lectura||'—').padEnd(16),
+        (r.mr||'—').padEnd(16),
+        ...(ec[param]||[]).map(col=>(r.extra?.[col]||'—').padEnd(16))
+      ];
+      txt += vals.join('') + '\n';
     });
+    txt += '\n';
   });
 
-  if (results.length) {
-    sessionStorage.setItem('analysis_results', JSON.stringify(results));
-    showToast('✓ ' + results.length + ' parámetros marcados como completados');
-    setTimeout(()=>{ location.href='status-pro5.html'; }, 1200);
-  } else {
-    location.href = 'status-pro5.html';
+  txt += '==================================================\n';
+  txt += '  Generado por LabStatus Pro\n';
+  txt += '==================================================\n';
+
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `analisis_${(codes[0]||'reporte').replace(/\//g,'-')}_${date.toISOString().slice(0,10)}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📄 TXT descargado');
+}
+
+// ════════════════════════════════════════
+//  GUARDAR EN SUPABASE HISTORIAL
+//  Tabla requerida en Supabase:
+//  CREATE TABLE analysis_history (
+//    id TEXT PRIMARY KEY, codes TEXT NOT NULL,
+//    saved_at TIMESTAMPTZ NOT NULL DEFAULT now(), data TEXT NOT NULL
+//  );
+//  ALTER TABLE analysis_history ENABLE ROW LEVEL SECURITY;
+//  CREATE POLICY "allow_all" ON analysis_history FOR ALL USING (true) WITH CHECK (true);
+// ════════════════════════════════════════
+async function saveToHistory() {
+  const codes = [...new Set(payload.map(s=>s.subCode))];
+  if (!codes.length) return null;
+
+  const record = {
+    id:       crypto.randomUUID(),
+    codes:    codes.join(', '),
+    saved_at: new Date().toISOString(),
+    data:     JSON.stringify({
+      tableData,
+      extraCols,
+      payload,
+      savedAt: new Date().toISOString()
+    })
+  };
+
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(SUPA_URL+'/rest/v1/analysis_history', {
+      method:  'POST',
+      headers: {...supaH, "Prefer":"return=minimal"},
+      body:    JSON.stringify(record)
+    });
+    if (!res.ok) {
+      const msg = await res.text();
+      console.error('Supabase error:', msg);
+      throw new Error(msg);
+    }
+    setSyncStatus('ok');
+    // Add to local list so it shows immediately without re-fetching
+    histRecords.unshift({
+      id:        record.id,
+      codes:     record.codes,
+      savedAt:   record.saved_at,
+      tableData: JSON.parse(JSON.stringify(tableData)),
+      extraCols: JSON.parse(JSON.stringify(extraCols)),
+      payload:   JSON.parse(JSON.stringify(payload))
+    });
+    renderHistory();
+    return record;
+  } catch(e) {
+    console.error('saveToHistory error:', e);
+    setSyncStatus('error');
+    return null;
   }
 }
 
-function goBack() { location.href='status-pro5.html'; }
-
-function clearData() {
-  if (!confirm('¿Limpiar todos los datos ingresados en las tablas?')) return;
-  Object.values(tableData).forEach(rows => rows.forEach(r=>{ r.lectura=''; r.mr=''; r.extra={}; }));
-  renderAll(); updateStatusBar();
-  document.getElementById('summaryCard').style.display='none';
+// ════════════════════════════════════════
+//  CARGAR HISTORIAL DESDE SUPABASE
+// ════════════════════════════════════════
+async function loadHistory() {
+  try {
+    const res = await fetch(
+      SUPA_URL+'/rest/v1/analysis_history?select=id,codes,saved_at,data&order=saved_at.desc&limit=200',
+      {headers: supaH}
+    );
+    if (!res.ok) throw await res.text();
+    const rows = await res.json();
+    histRecords = rows.map(r => {
+      let parsed = {};
+      try { parsed = JSON.parse(r.data); } catch(e){}
+      return {
+        id:        r.id,
+        codes:     r.codes,
+        savedAt:   r.saved_at,
+        tableData: parsed.tableData||{},
+        extraCols: parsed.extraCols||{},
+        payload:   parsed.payload||[]
+      };
+    });
+    renderHistory();
+  } catch(e) {
+    console.error('loadHistory error:', e);
+    document.getElementById('historyList').innerHTML =
+      '<div class="hist-empty">⚠ No se pudo cargar el historial. Verifica tu conexión o que la tabla analysis_history exista en Supabase.</div>';
+  }
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2000);
+async function deleteHistRecord(id) {
+  if (!confirm('¿Eliminar este registro del historial? No se puede deshacer.')) return;
+  try {
+    const res = await fetch(SUPA_URL+'/rest/v1/analysis_history?id=eq.'+id, {
+      method:'DELETE', headers:supaH
+    });
+    if (!res.ok) throw 0;
+    histRecords = histRecords.filter(r=>r.id!==id);
+    if (expandedHist===id) expandedHist=null;
+    renderHistory();
+    showToast('🗑 Registro eliminado');
+  } catch(e) { showToast('⚠ Error al eliminar', true); }
+}
+
+// ════════════════════════════════════════
+//  RENDER HISTORIAL
+// ════════════════════════════════════════
+function renderHistory() {
+  const q      = (document.getElementById('histSearch').value||'').toLowerCase().trim();
+  const list   = document.getElementById('historyList');
+
+  let filtered = histRecords;
+  if (q) {
+    filtered = histRecords.filter(r =>
+      r.codes.toLowerCase().includes(q) ||
+      new Date(r.savedAt).toLocaleString('es-PE').toLowerCase().includes(q)
+    );
+  }
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="hist-empty">${q?`Sin resultados para "${esc(q)}"` :'Sin registros de análisis aún'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => {
+    const isOpen   = expandedHist===r.id;
+    const params   = Object.keys(r.tableData);
+    const dateStr  = new Date(r.savedAt).toLocaleString('es-PE');
+    const chips    = params.map(p=>`<span class="hist-chip">${esc(p)}</span>`).join('');
+
+    // Build detail tables (read-only)
+    const bodyHtml = params.map(param => {
+      const rows = r.tableData[param]||[];
+      const ec   = r.extraCols[param]||[];
+      const extraTh = ec.map(c=>`<th>${esc(c)}</th>`).join('');
+      const rowsHtml = rows.map(row=>`
+        <tr>
+          <td>${esc(row.subCode||'')}</td>
+          <td class="${row.lectura?'td-lec':'td-empty'}">${esc(row.lectura||'—')}</td>
+          <td class="${row.mr?'td-mr':'td-empty'}">${esc(row.mr||'—')}</td>
+          ${ec.map(c=>`<td>${esc(row.extra?.[c]||'—')}</td>`).join('')}
+        </tr>`).join('');
+      return `
+        <div class="hist-param-title">▸ ${esc(param)}</div>
+        <div style="overflow-x:auto">
+          <table class="hist-table">
+            <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th>${extraTh}</tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>`;
+    }).join('');
+
+    // Serialize record safely for inline onclick
+    const recJson = JSON.stringify(r).replace(/\\/g,'\\\\').replace(/"/g,'&quot;');
+
+    return `
+    <div class="hist-card ${isOpen?'hist-open':''}" id="hc_${r.id}">
+      <div class="hist-row" onclick="toggleHist('${r.id}')">
+        <div style="flex:1;min-width:0">
+          <div class="hist-code">${esc(r.codes)}</div>
+          <div class="hist-meta">${dateStr} · ${params.length} parámetro${params.length!==1?'s':''}</div>
+        </div>
+        <div class="hist-params">${chips}</div>
+        <span class="hist-arr" style="margin-left:12px">▶</span>
+      </div>
+      <div class="hist-body ${isOpen?'open':''}" id="hb_${r.id}">
+        ${bodyHtml}
+        <div class="hist-actions">
+          <button class="btn-hist-txt" onclick="exportTxtFromHist('${r.id}')">📄 Exportar TXT</button>
+          <button class="btn-hist-del" onclick="deleteHistRecord('${r.id}')">🗑 Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleHist(id) {
+  expandedHist = expandedHist===id ? null : id;
+  renderHistory();
+}
+
+// Called from history card button — looks up record by id to avoid inline JSON issues
+function exportTxtFromHist(id) {
+  const r = histRecords.find(x=>x.id===id);
+  if (r) exportTxt(r);
+}
+
+// ════════════════════════════════════════
+//  GUARDAR Y VOLVER A MUESTRAS
+// ════════════════════════════════════════
+async function pushResultsAndBack() {
+  // 1. Collect filled params to push back as completed
+  const results = [];
+  Object.entries(tableData).forEach(([paramName, rows]) => {
+    rows.forEach(r => {
+      if (r.lectura.trim()!=='') results.push({subId:r.subId, paramName});
+    });
+  });
+  if (results.length) {
+    sessionStorage.setItem('analysis_results', JSON.stringify(results));
+  }
+
+  // 2. Save to Supabase history
+  const saved = await saveToHistory();
+  if (saved) {
+    showToast('✓ Guardado en historial');
+  } else {
+    showToast('⚠ No se pudo guardar en historial\n(los parámetros sí se marcarán)', true);
+  }
+
+  setTimeout(()=>{ location.href='status-pro.html'; }, 1300);
+}
+
+function goBack() { location.href='status-pro.html'; }
+
+function clearData() {
+  if (!confirm('¿Limpiar todos los datos ingresados?')) return;
+  Object.values(tableData).forEach(rows=>rows.forEach(r=>{ r.lectura=''; r.mr=''; r.extra={}; }));
+  renderAll(); updateStatusBar();
+  document.getElementById('summaryCard').style.display='none';
 }
 
 // ════════════════════════════════════════
 //  UTILS
 // ════════════════════════════════════════
+function showToast(msg, isErr=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'toast show' + (isErr?' err':'');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 2500);
+}
 function esc(str) {
   return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }

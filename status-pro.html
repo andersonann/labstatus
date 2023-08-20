@@ -345,9 +345,16 @@ header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;alig
 // ════════════════════════════════════════
 //  CONFIG
 // ════════════════════════════════════════
-const BIN_URL  = "https://api.jsonbin.io/v3/b/69ef96e636566621a8fa0813";
-const BIN_KEY  = "$2a$10$y5s3F5YdWIB9axb55/V4TuK6E/1Z5Sod/pyqxbn5H/aBLjoTAYapS";
+const SUPA_URL = "https://puwgkmjxystqfgubmtwv.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1d2drbWp4eXN0cWZndWJtdHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MzA2NTYsImV4cCI6MjA5MzAwNjY1Nn0.ZeV9g3p2dfdRuGguT9nrBUaqq2-RH8uZklhlOff2vxc";
 const CACHE_KEY= "labstatus_v5";
+
+const supaHeaders = {
+  "Content-Type": "application/json",
+  "apikey": SUPA_KEY,
+  "Authorization": "Bearer " + SUPA_KEY,
+  "Prefer": "return=minimal"
+};
 
 // Schema:
 // orders[]   → {id, code, client, params[], subsamples[], createdAt}
@@ -365,14 +372,17 @@ let pendingDelete = null;
 //  INIT — instant from cache, background sync
 // ════════════════════════════════════════
 function init() {
-  // FIX #5: apply any param completions pushed from analysis page
+  // 1. Load cache first so orders is populated
+  const raw = localStorage.getItem(CACHE_KEY);
+  if (raw) { try { orders = JSON.parse(raw); } catch(e) { orders=[]; } }
+
+  // 2. Apply analysis results AFTER cache is loaded
   applyAnalysisResults();
 
-  const raw = localStorage.getItem(CACHE_KEY);
-  if (raw) {
-    try { orders = JSON.parse(raw); render(); } catch(e) { orders=[]; showSkeleton(); }
-  } else { showSkeleton(); }
+  // 3. Render from cache immediately
+  if (orders.length) { render(); } else { showSkeleton(); }
 
+  // 4. Sync with Supabase in background
   loadRemote();
   setInterval(loadRemote, 30000);
 }
@@ -392,10 +402,12 @@ function setSyncStatus(s) {
 async function loadRemote() {
   setSyncStatus('syncing');
   try {
-    const res  = await fetch(BIN_URL+'/latest', {headers:{'X-Master-Key':BIN_KEY}});
+    const res = await fetch(SUPA_URL + '/rest/v1/orders?select=id,data&order=data->>code.asc', {
+      headers: supaHeaders
+    });
     if (!res.ok) throw 0;
-    const data = await res.json();
-    orders = data.record?.orders || [];
+    const rows = await res.json();
+    orders = rows.map(r => r.data);
     sortOrders();
     localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
     render();
@@ -403,15 +415,39 @@ async function loadRemote() {
   } catch(e) { setSyncStatus('error'); }
 }
 
+// Upsert a single order (atomic — never overwrites other orders)
+async function saveOrderRemote(order) {
+  return fetch(SUPA_URL + '/rest/v1/orders', {
+    method: 'POST',
+    headers: { ...supaHeaders, "Prefer": "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ id: order.id, data: order, updated_at: new Date().toISOString() })
+  });
+}
+
+// Delete a single order by id
+async function deleteOrderRemote(id) {
+  return fetch(SUPA_URL + '/rest/v1/orders?id=eq.' + id, {
+    method: 'DELETE',
+    headers: supaHeaders
+  });
+}
+
 async function saveRemote() {
   setSyncStatus('syncing');
   localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
   try {
-    await fetch(BIN_URL, {
-      method:'PUT',
-      headers:{'Content-Type':'application/json','X-Master-Key':BIN_KEY},
-      body: JSON.stringify({orders})
-    });
+    // Upsert all orders in parallel
+    await Promise.all(orders.map(o => saveOrderRemote(o)));
+    setSyncStatus('ok');
+  } catch(e) { setSyncStatus('error'); }
+}
+
+// Save just one order (faster — used for single-order changes)
+async function saveOne(order) {
+  setSyncStatus('syncing');
+  localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
+  try {
+    await saveOrderRemote(order);
     setSyncStatus('ok');
   } catch(e) { setSyncStatus('error'); }
 }
@@ -512,7 +548,7 @@ function addSubsample(orderId) {
   });
   o.subsamples.forEach((s,i) => s.code = o.code+'/'+pad3(i+1));
   expandedOrder = orderId;
-  render(); saveRemote();
+  render(); saveOne(o);
 }
 
 function deleteSubsample(orderId, subId) {
@@ -521,7 +557,7 @@ function deleteSubsample(orderId, subId) {
   o.subsamples = o.subsamples.filter(s=>s.id!==subId);
   o.subsamples.forEach((s,i) => s.code = o.code+'/'+pad3(i+1));
   expandedOrder = orderId;
-  render(); saveRemote();
+  render(); saveOne(o);
 }
 
 // ════════════════════════════════════════
@@ -535,15 +571,24 @@ function confirmDelete(id) {
   document.getElementById('modalConfirmBtn').onclick = executeDelete;
   document.getElementById('modalOverlay').classList.add('open');
 }
-function executeDelete() {
+async function executeDelete() {
   if (!pendingDelete) return;
   if (pendingDelete.type==='single') {
-    orders = orders.filter(o=>o.id!==pendingDelete.id);
+    const id = pendingDelete.id;
+    orders = orders.filter(o=>o.id!==id);
+    closeModal(); render();
+    localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
+    setSyncStatus('syncing');
+    try { await deleteOrderRemote(id); setSyncStatus('ok'); } catch(e){ setSyncStatus('error'); }
   } else {
+    const ids = [...selectedIds];
     orders = orders.filter(o=>!selectedIds.has(o.id));
     clearSelection();
+    closeModal(); render();
+    localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
+    setSyncStatus('syncing');
+    try { await Promise.all(ids.map(id => deleteOrderRemote(id))); setSyncStatus('ok'); } catch(e){ setSyncStatus('error'); }
   }
-  closeModal(); render(); saveRemote();
 }
 function bulkDelete() {
   pendingDelete = {type:'bulk'};
@@ -616,7 +661,8 @@ function applyAnalysisResults() {
   const raw = sessionStorage.getItem('analysis_results');
   if (!raw) return;
   try {
-    const results = JSON.parse(raw); // [{subId, paramName}]
+    const results = JSON.parse(raw);
+    const affectedOrders = new Set();
     results.forEach(r => {
       for (const o of orders) {
         const s = o.subsamples.find(x=>x.id===r.subId);
@@ -624,11 +670,12 @@ function applyAnalysisResults() {
         const p = s.params.find(x=>x.name===r.paramName);
         if (p && !p.done) { p.done=true; p.auto=true; }
         autoSyncStatus(s);
+        affectedOrders.add(o);
       }
     });
     sessionStorage.removeItem('analysis_results');
     localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
-    saveRemote();
+    affectedOrders.forEach(o => saveOne(o));
   } catch(e){}
 }
 
@@ -642,7 +689,7 @@ function changeSubStatus(orderId, subId, val) {
   s.status = val;
   if (val==='Completado') s.params.forEach(p=>{ p.done=true; });
   expandedOrder=orderId; expandedSub=subId;
-  render(); saveRemote();
+  render(); saveOne(o);
 }
 
 // FIX #5: manual toggle always works; clears auto flag so user takes control
@@ -654,7 +701,7 @@ function toggleParam(orderId, subId, idx) {
   s.params[idx].auto = false; // manual override
   autoSyncStatus(s);
   expandedOrder=orderId; expandedSub=subId;
-  render(); saveRemote();
+  render(); saveOne(o);
 }
 
 // FIX #3: addParamInline reads DOM value directly, does NOT re-render until after clear
@@ -669,7 +716,7 @@ function addParamInline(orderId, subId) {
   names.forEach(name => s.params.push({name, done:false, auto:false}));
   el.value = '';
   expandedOrder=orderId; expandedSub=subId;
-  render(); saveRemote();
+  render(); saveOne(o);
 }
 
 function deleteParam(orderId, subId, idx) {
@@ -679,7 +726,7 @@ function deleteParam(orderId, subId, idx) {
   s.params.splice(idx, 1);
   autoSyncStatus(s);
   expandedOrder=orderId; expandedSub=subId;
-  render(); saveRemote();
+  render(); saveOne(o);
 }
 
 // ════════════════════════════════════════
@@ -698,7 +745,7 @@ function saveOrderEdit(id) {
   if (clientEl) o.client = clientEl.value.trim();
   sortOrders();
   expandedOrder = id;
-  render(); saveRemote();
+  render(); saveOne(o);
 }
 
 function saveNote(orderId, subId) {
@@ -706,7 +753,7 @@ function saveNote(orderId, subId) {
   if (!el) return;
   const o = orders.find(x=>x.id===orderId);
   const s = o?.subsamples.find(x=>x.id===subId);
-  if (s) { s.note = el.value; saveRemote(); }
+  if (s) { s.note = el.value; saveOne(o); }
 }
 
 // ════════════════════════════════════════
