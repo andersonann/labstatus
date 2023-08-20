@@ -16,116 +16,120 @@
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;
   background-image:radial-gradient(ellipse at 80% 0%,rgba(255,179,0,.04) 0%,transparent 60%);}
 
-/* HEADER */
-header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;
-  justify-content:space-between;background:rgba(13,20,33,.92);backdrop-filter:blur(12px);
-  position:sticky;top:0;z-index:100;}
+header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;
+  align-items:center;justify-content:space-between;background:rgba(13,20,33,.95);
+  backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
 .logo{font-family:var(--font-mono);font-size:13px;color:var(--accent);letter-spacing:3px;}
 .header-nav{display:flex;gap:8px;}
 .nav-btn{background:transparent;border:1px solid var(--border);color:var(--muted);
   border-radius:6px;padding:6px 14px;font-family:var(--font-mono);font-size:11px;
-  cursor:pointer;letter-spacing:1px;transition:all .15s;text-decoration:none;display:inline-block;}
+  cursor:pointer;letter-spacing:1px;transition:all .15s;}
 .nav-btn:hover,.nav-btn.active{border-color:var(--accent);color:var(--accent);}
 
 .container{max-width:1000px;margin:0 auto;padding:24px 14px;}
 
 /* TOP BAR */
-.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
 .page-title{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;}
 .btn-primary{background:var(--accent);color:#000;border:none;border-radius:7px;
-  padding:8px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;transition:background .15s;}
+  padding:8px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;}
 .btn-primary:hover{background:#00aacc;}
 .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);
   border-radius:7px;padding:8px 16px;font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .15s;}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-success{background:var(--green);color:#000;border:none;border-radius:7px;
+  padding:8px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;}
+.btn-success:hover{background:#00bb55;}
 
 /* STATUS BAR */
 .status-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
 .status-item{display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--font-mono);}
-.status-dot{width:8px;height:8px;border-radius:50%;}
-.dot-ok{background:var(--green);}
-.dot-warn{background:var(--yellow);}
-.dot-error{background:var(--red);}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sdot-ok{background:var(--green);}
+.sdot-warn{background:var(--yellow);}
+.sdot-err{background:var(--red);}
 
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:60px 20px;}
-.empty-icon{font-size:40px;margin-bottom:14px;opacity:.3;}
-.empty-title{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;}
-.empty-sub{font-size:13px;color:var(--muted);line-height:1.6;}
+/* SUMMARY */
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:18px;margin-bottom:20px;display:none;}
+.summary-title{font-family:var(--font-mono);font-size:10px;color:var(--accent);
+  letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+.result-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;}
+.result-num{font-family:var(--font-mono);font-size:20px;font-weight:700;}
+.result-num.green{color:var(--green);}
+.result-num.yellow{color:var(--yellow);}
+.result-num.red{color:var(--red);}
+.result-num.blue{color:var(--accent);}
+.result-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;}
 
 /* PARAM TABLE CARD */
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
   margin-bottom:20px;overflow:hidden;position:relative;}
 .table-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,var(--yellow),transparent);}
-.table-card-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);}
-.param-title{font-family:var(--font-mono);font-size:14px;color:var(--yellow);font-weight:700;letter-spacing:1px;}
-.param-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
-.table-status{font-size:11px;font-family:var(--font-mono);padding:3px 8px;border-radius:4px;}
-.ts-ok{color:var(--green);background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);}
+.table-card-header{padding:14px 18px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.param-title{font-family:var(--font-mono);font-size:15px;color:var(--yellow);font-weight:700;letter-spacing:1px;}
+.param-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:2px;}
+.table-status{font-size:10px;font-family:var(--font-mono);padding:3px 8px;border-radius:4px;}
+.ts-ok  {color:var(--green); background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);}
 .ts-warn{color:var(--yellow);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);}
-.ts-error{color:var(--red);background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);}
+.ts-err {color:var(--red);   background:rgba(255,68,68,.08); border:1px solid rgba(255,68,68,.2);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.btn-addcol{background:transparent;border:1px dashed var(--border);color:var(--muted);
+  border-radius:5px;padding:4px 9px;font-size:10px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
+.btn-addcol:hover{border-color:var(--accent);color:var(--accent);}
 
-/* DATA TABLE */
-.data-table-wrap{overflow-x:auto;padding:0 18px 16px;}
-table{width:100%;border-collapse:collapse;margin-top:14px;}
+/* TABLE */
+.data-wrap{overflow-x:auto;padding:0 18px 16px;}
+table{width:100%;border-collapse:collapse;margin-top:12px;}
 thead th{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px;
-  text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;}
-tbody tr{border-bottom:1px solid rgba(30,45,69,.5);}
+  text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;
+  white-space:nowrap;}
+tbody tr{border-bottom:1px solid rgba(30,45,69,.4);}
 tbody tr:last-child{border-bottom:none;}
 tbody tr:hover{background:rgba(0,212,255,.02);}
-.cell-code{font-family:var(--font-mono);font-size:12px;color:var(--accent);padding:10px;
-  font-weight:700;white-space:nowrap;}
-.cell-input{padding:6px;}
-.cell-input input{width:100%;min-width:90px;background:var(--surface2);border:1px solid var(--border);
-  border-radius:6px;color:var(--text);padding:7px 9px;font-family:var(--font-mono);font-size:12px;
-  outline:none;transition:border-color .2s;}
-.cell-input input:focus{border-color:var(--accent);}
-.cell-input input.required-empty{border-color:var(--red)!important;background:rgba(255,68,68,.05);}
-.cell-input input.filled{border-color:rgba(0,230,118,.4);}
-.cell-input input::placeholder{color:var(--muted);font-size:11px;}
-.cell-status{padding:6px 10px;font-size:11px;font-family:var(--font-mono);}
-.row-ok{color:var(--green);}
-.row-warn{color:var(--yellow);}
-.row-empty{color:var(--muted);}
+.cell-code{font-family:var(--font-mono);font-size:12px;color:var(--accent);
+  padding:9px 10px;font-weight:700;white-space:nowrap;}
+.cell-in{padding:5px 6px;}
+.cell-in input{
+  width:100%;min-width:80px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);padding:7px 8px;font-family:var(--font-mono);
+  font-size:12px;outline:none;transition:border-color .2s;}
+.cell-in input:focus{border-color:var(--accent);}
+.cell-in input.filled{border-color:rgba(0,230,118,.5);}
+.cell-in input.empty-err{border-color:var(--red)!important;background:rgba(255,68,68,.05);}
+.cell-in input::placeholder{color:var(--muted);font-size:11px;}
+.cell-st{padding:6px 10px;font-size:11px;font-family:var(--font-mono);}
+.st-ok  {color:var(--green);}
+.st-warn{color:var(--yellow);}
+.st-muted{color:var(--muted);}
 
-/* MR NOTE */
 .mr-note{font-size:10px;color:var(--muted);font-family:var(--font-mono);
-  padding:6px 18px 12px;border-top:1px dashed var(--border);margin-top:2px;}
+  padding:6px 18px 12px;border-top:1px dashed var(--border);margin-top:4px;}
 
-/* EXTRA COLS */
-.btn-add-col{background:transparent;border:1px dashed var(--border);color:var(--muted);
-  border-radius:5px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:var(--font-mono);
-  transition:all .15s;white-space:nowrap;}
-.btn-add-col:hover{border-color:var(--accent);color:var(--accent);}
+/* BACK BTN TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;
+  border-radius:10px;padding:12px 18px;font-family:var(--font-mono);font-size:12px;
+  display:none;z-index:300;box-shadow:0 4px 20px rgba(0,230,118,.3);}
+.toast.show{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* RESULTS SUMMARY */
-.results-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  padding:18px;margin-bottom:20px;}
-.results-title{font-family:var(--font-mono);font-size:10px;color:var(--accent);
-  letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;}
-.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
-.result-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
-  padding:10px;text-align:center;}
-.result-num{font-family:var(--font-mono);font-size:20px;font-weight:700;}
-.result-num.green{color:var(--green);}
-.result-num.yellow{color:var(--yellow);}
-.result-num.red{color:var(--red);}
-.result-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;}
+/* EMPTY */
+.empty-state{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:.3;}
+.empty-title{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;}
+.empty-sub{font-size:13px;color:var(--muted);line-height:1.6;}
+.empty-sub b{color:var(--text);}
 
-/* PRINT */
 @media print{
-  header,.btn-row,.top-bar button,.btn-add-col{display:none!important;}
+  header,.btn-row,.top-bar button,.btn-addcol,.btn-row{display:none!important;}
   body{background:#fff;color:#000;}
-  .table-card{border:1px solid #ccc;}
-  .data-table-wrap table{color:#000;}
-  .cell-input input{border:1px solid #999;color:#000;background:#fff;}
-}
-@media(max-width:600px){
-  .result-grid{grid-template-columns:1fr 1fr;}
+  .table-card{border:1px solid #ccc;break-inside:avoid;}
+  .cell-in input{border:1px solid #999;color:#000;background:#fff;}
 }
 </style>
 </head>
@@ -134,52 +138,60 @@ tbody tr:hover{background:rgba(0,212,255,.02);}
 <header>
   <div class="logo">◈ LABSTATUS</div>
   <div class="header-nav">
-    <a class="nav-btn" href="index.html">← Muestras</a>
+    <button class="nav-btn" onclick="goBack()">← Muestras</button>
     <span class="nav-btn active">⚗ Análisis</span>
   </div>
 </header>
+
+<div class="toast" id="toast">✓ Parámetros marcados en Muestras</div>
 
 <div class="container">
   <div class="top-bar">
     <span class="page-title">⚗ Hoja de Análisis</span>
     <div class="btn-row">
-      <button class="btn-secondary" onclick="clearAll()">✕ Limpiar</button>
+      <button class="btn-secondary" onclick="clearData()">✕ Limpiar datos</button>
       <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
-      <button class="btn-primary" onclick="validateAll()">✓ Validar todo</button>
+      <button class="btn-primary"   onclick="validateAll()">✓ Validar</button>
+      <button class="btn-success"   onclick="pushResultsAndBack()">↩ Guardar y volver</button>
     </div>
   </div>
 
   <!-- STATUS BAR -->
-  <div class="status-bar" id="statusBar">
-    <div class="status-item"><div class="status-dot dot-ok"></div><span id="stTotal">0 muestras cargadas</span></div>
-    <div class="status-item"><div class="status-dot dot-warn"></div><span id="stMissing">0 lecturas faltantes</span></div>
-    <div class="status-item"><div class="status-dot dot-error"></div><span id="stMR">MR: revisando...</span></div>
+  <div class="status-bar">
+    <div class="status-item"><div class="sdot sdot-ok"></div><span id="stTotal">—</span></div>
+    <div class="status-item"><div class="sdot sdot-warn"></div><span id="stMissing">—</span></div>
+    <div class="status-item"><div class="sdot sdot-err"></div><span id="stMR">—</span></div>
   </div>
 
   <!-- SUMMARY -->
-  <div class="results-card" id="summaryCard" style="display:none">
-    <div class="results-title">Resumen de validación</div>
+  <div class="summary-card" id="summaryCard">
+    <div class="summary-title">Resumen de validación</div>
     <div class="result-grid" id="summaryGrid"></div>
   </div>
 
-  <!-- TABLES CONTAINER -->
+  <!-- TABLES -->
   <div id="tablesContainer"></div>
 
   <!-- EMPTY -->
-  <div class="empty-state" id="emptyState">
+  <div class="empty-state" id="emptyState" style="display:none">
     <div class="empty-icon">⚗</div>
-    <div class="empty-title">Sin muestras seleccionadas</div>
-    <div class="empty-sub">Ve a la página principal, selecciona las órdenes de servicio<br>que quieres analizar y haz clic en <b>⚗ Analizar</b>.</div>
+    <div class="empty-title">Sin muestras cargadas</div>
+    <div class="empty-sub">Ve a <b>Muestras</b>, activa <b>Seleccionar</b>,<br>elige las órdenes y pulsa <b>⚗ Analizar</b>.</div>
   </div>
 </div>
 
 <script>
-// ── LOAD PAYLOAD ────────────────────────────────
-// payload: [{orderCode, client, subCode, subId, params:[]}]
+// payload: [{orderId, orderCode, client, subCode, subId, params:[]}]
 let payload = [];
-let tableData = {}; // {param: [{subCode, lectura, mr, extraCols:{}}]}
-let extraColsByParam = {}; // {param: ['Dilución', ...]}
 
+// tableData: {paramName: [{subCode, subId, lectura, mr, extra:{colName:val}}]}
+let tableData = {};
+// extraCols:  {paramName: [colName, ...]}
+let extraCols = {};
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
 function init() {
   const raw = sessionStorage.getItem('analyze_payload');
   if (!raw) { showEmpty(); return; }
@@ -193,237 +205,263 @@ function init() {
 function showEmpty() {
   document.getElementById('emptyState').style.display = 'block';
   document.getElementById('tablesContainer').style.display = 'none';
-  document.getElementById('summaryCard').style.display = 'none';
 }
 
+// ════════════════════════════════════════
+//  BUILD
+// ════════════════════════════════════════
 function buildTables() {
   document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('tablesContainer').style.display = 'block';
 
-  // Group samples by param
-  const paramMap = {}; // {paramName: [{subCode}]}
+  // Group by param
+  const pm = {};
   payload.forEach(s => {
     s.params.forEach(p => {
-      if (!paramMap[p]) paramMap[p] = [];
-      // avoid duplicates
-      if (!paramMap[p].find(x => x.subCode === s.subCode)) {
-        paramMap[p].push({ subCode: s.subCode, client: s.client, orderCode: s.orderCode });
-      }
+      if (!pm[p]) pm[p] = [];
+      if (!pm[p].find(x=>x.subId===s.subId))
+        pm[p].push({subCode:s.subCode, subId:s.subId, client:s.client});
     });
   });
 
-  // Init tableData
   tableData = {};
-  extraColsByParam = {};
-  Object.entries(paramMap).forEach(([param, subs]) => {
-    tableData[param] = subs.map(s => ({ subCode: s.subCode, lectura: '', mr: '' }));
-    extraColsByParam[param] = [];
+  extraCols  = {};
+  Object.entries(pm).forEach(([param, rows]) => {
+    tableData[param] = rows.map(r => ({subCode:r.subCode, subId:r.subId, lectura:'', mr:'', extra:{}}));
+    extraCols[param] = [];
   });
 
-  renderTables();
+  renderAll();
   updateStatusBar();
 }
 
-function renderTables() {
+// ════════════════════════════════════════
+//  RENDER ALL TABLES
+// ════════════════════════════════════════
+function renderAll() {
   const container = document.getElementById('tablesContainer');
   const params = Object.keys(tableData);
   if (!params.length) { showEmpty(); return; }
-
-  container.innerHTML = params.map(param => renderParamTable(param)).join('');
+  container.innerHTML = params.map(p => renderTable(p)).join('');
 }
 
-function renderParamTable(param) {
+function renderTable(param) {
   const rows = tableData[param];
-  const extraCols = extraColsByParam[param] || [];
-  const hasMR = rows.some(r => r.mr.trim() !== '');
-  const allLectura = rows.every(r => r.lectura.trim() !== '');
-  const statusClass = allLectura && hasMR ? 'ts-ok' : !allLectura ? 'ts-error' : 'ts-warn';
-  const statusText = allLectura && hasMR ? '✓ Completo' : !allLectura ? '⚠ Falta lecturas' : '⚠ Falta MR';
+  const ec   = extraCols[param]||[];
+  const allLec  = rows.every(r=>r.lectura.trim()!=='');
+  const hasMR   = rows.some(r=>r.mr.trim()!=='');
+  const stCls   = allLec&&hasMR?'ts-ok':!allLec?'ts-err':'ts-warn';
+  const stTxt   = allLec&&hasMR?'✓ Completo':!allLec?'⚠ Faltan lecturas':'⚠ Sin MR';
 
-  const extraHeaders = extraCols.map(col =>
-    `<th>${col} <button class="btn-add-col" onclick="removeExtraCol('${param}','${col}')" style="margin-left:4px;font-size:9px;padding:1px 4px">✕</button></th>`
+  const extraTh = ec.map(col=>
+    `<th>${col} <button class="btn-addcol" style="padding:1px 5px;font-size:9px" onclick="removeCol('${esc(param)}','${esc(col)}')">✕</button></th>`
   ).join('');
 
-  const rowsHtml = rows.map((r, i) => {
-    const extraInputs = extraCols.map(col =>
-      `<td class="cell-input"><input type="text" value="${r.extraCols?.[col]||''}"
-        placeholder="-"
-        oninput="setExtra('${param}',${i},'${col}',this.value)" /></td>`
-    ).join('');
+  const rowsHtml = rows.map((r,i) => {
+    const lFilled = r.lectura.trim()!=='';
+    const rSt     = lFilled ? 'st-ok' : 'st-muted';
+    const rTxt    = lFilled ? '✓' : '—';
 
-    const lecturaFilled = r.lectura.trim() !== '';
-    const rowStatusClass = lecturaFilled ? 'row-ok' : 'row-empty';
-    const rowStatusText = lecturaFilled ? '✓' : '—';
+    const extraTd = ec.map(col =>
+      `<td class="cell-in">
+        <input type="text" value="${esc(r.extra[col]||'')}" placeholder="-"
+          oninput="setExtra('${esc(param)}',${i},'${esc(col)}',this.value)">
+      </td>`
+    ).join('');
 
     return `
     <tr>
-      <td class="cell-code">${r.subCode}</td>
-      <td class="cell-input">
-        <input type="number" step="any" value="${r.lectura}"
+      <td class="cell-code">${esc(r.subCode)}</td>
+      <td class="cell-in">
+        <input type="number" step="any" value="${esc(r.lectura)}"
           placeholder="Lectura"
-          class="${lecturaFilled?'filled':''}"
-          oninput="setVal('${param}',${i},'lectura',this.value);this.className=this.value.trim()?'filled':''"
-          onchange="updateStatusBar()"/>
+          class="${lFilled?'filled':''}"
+          id="lec_${esc(param)}_${i}"
+          oninput="setLectura('${esc(param)}',${i},this.value)"
+          onchange="updateStatusBar()">
       </td>
-      <td class="cell-input">
-        <input type="number" step="any" value="${r.mr}"
+      <td class="cell-in">
+        <input type="number" step="any" value="${esc(r.mr)}"
           placeholder="MR (opt.)"
           class="${r.mr.trim()?'filled':''}"
-          oninput="setVal('${param}',${i},'mr',this.value);this.className=this.value.trim()?'filled':''"
-          onchange="updateStatusBar()"/>
+          oninput="setMR('${esc(param)}',${i},this.value)"
+          onchange="updateStatusBar()">
       </td>
-      ${extraInputs}
-      <td class="cell-status ${rowStatusClass}">${rowStatusText}</td>
+      ${extraTd}
+      <td class="cell-st ${rSt}">${rTxt}</td>
     </tr>`;
   }).join('');
 
   return `
-  <div class="table-card" id="tcard_${param.replace(/\s/g,'_')}">
+  <div class="table-card" id="tc_${slugify(param)}">
     <div class="table-card-header">
       <div>
-        <div class="param-title">${param}</div>
+        <div class="param-title">${esc(param)}</div>
         <div class="param-meta">${rows.length} muestra${rows.length>1?'s':''}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn-add-col" onclick="addExtraCol('${param}')">+ Col</button>
-        <span class="table-status ${statusClass}" id="tstatus_${param.replace(/\s/g,'_')}">${statusText}</span>
+      <div class="header-right">
+        <button class="btn-addcol" onclick="addCol('${esc(param)}')">+ Columna</button>
+        <span class="table-status ${stCls}" id="ts_${slugify(param)}">${stTxt}</span>
       </div>
     </div>
-    <div class="data-table-wrap">
+    <div class="data-wrap">
       <table>
         <thead>
           <tr>
-            <th>Muestra</th>
-            <th>Lectura</th>
-            <th>MR</th>
-            ${extraHeaders}
+            <th>Muestra</th><th>Lectura</th><th>MR</th>
+            ${extraTh}
             <th>Estado</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
       </table>
     </div>
-    <div class="mr-note">* MR = Material de Referencia. Al menos una fila por tabla debe tener MR para que la tabla se marque como completa.</div>
+    <div class="mr-note">* MR = Material de Referencia. Mínimo una fila por tabla debe tener MR.</div>
   </div>`;
 }
 
-function setVal(param, idx, field, val) {
-  if (!tableData[param]) return;
-  tableData[param][idx][field] = val;
+// ════════════════════════════════════════
+//  DATA SETTERS — no full re-render, just update model
+//  FIX #3: inputs update model directly, re-render only table status
+// ════════════════════════════════════════
+function setLectura(param, idx, val) {
+  tableData[param][idx].lectura = val;
+  // Update input class in-place without re-render
+  const el = document.getElementById('lec_'+slugify(param)+'_'+idx);
+  if (el) el.className = val.trim() ? 'filled' : '';
   updateTableStatus(param);
   updateStatusBar();
 }
-
-function setExtra(param, idx, col, val) {
-  if (!tableData[param]) return;
-  if (!tableData[param][idx].extraCols) tableData[param][idx].extraCols = {};
-  tableData[param][idx].extraCols[col] = val;
-}
-
-function addExtraCol(param) {
-  const name = prompt('Nombre de la columna extra (ej: Dilución, Abs):');
-  if (!name || !name.trim()) return;
-  const col = name.trim();
-  if (!extraColsByParam[param]) extraColsByParam[param] = [];
-  if (!extraColsByParam[param].includes(col)) {
-    extraColsByParam[param].push(col);
-    tableData[param].forEach(r => { if (!r.extraCols) r.extraCols = {}; r.extraCols[col] = ''; });
-    rerenderTable(param);
-  }
-}
-
-function removeExtraCol(param, col) {
-  if (!extraColsByParam[param]) return;
-  extraColsByParam[param] = extraColsByParam[param].filter(c => c !== col);
-  tableData[param].forEach(r => { if (r.extraCols) delete r.extraCols[col]; });
-  rerenderTable(param);
-}
-
-function rerenderTable(param) {
-  const el = document.getElementById('tcard_' + param.replace(/\s/g,'_'));
-  if (el) el.outerHTML = renderParamTable(param);
-  // re-find after DOM update
-  const container = document.getElementById('tablesContainer');
-  const params = Object.keys(tableData);
-  container.innerHTML = params.map(p => renderParamTable(p)).join('');
+function setMR(param, idx, val) {
+  tableData[param][idx].mr = val;
+  updateTableStatus(param);
   updateStatusBar();
+}
+function setExtra(param, idx, col, val) {
+  if (!tableData[param][idx].extra) tableData[param][idx].extra={};
+  tableData[param][idx].extra[col] = val;
 }
 
 function updateTableStatus(param) {
-  const rows = tableData[param] || [];
-  const hasMR = rows.some(r => r.mr.trim() !== '');
-  const allLectura = rows.every(r => r.lectura.trim() !== '');
-  const el = document.getElementById('tstatus_' + param.replace(/\s/g,'_'));
+  const rows   = tableData[param]||[];
+  const allLec = rows.every(r=>r.lectura.trim()!=='');
+  const hasMR  = rows.some(r=>r.mr.trim()!=='');
+  const el = document.getElementById('ts_'+slugify(param));
   if (!el) return;
-  if (allLectura && hasMR) {
-    el.className = 'table-status ts-ok'; el.textContent = '✓ Completo';
-  } else if (!allLectura) {
-    el.className = 'table-status ts-error'; el.textContent = '⚠ Falta lecturas';
-  } else {
-    el.className = 'table-status ts-warn'; el.textContent = '⚠ Falta MR';
-  }
+  if (allLec&&hasMR)  { el.className='table-status ts-ok';  el.textContent='✓ Completo'; }
+  else if (!allLec)   { el.className='table-status ts-err'; el.textContent='⚠ Faltan lecturas'; }
+  else                { el.className='table-status ts-warn';el.textContent='⚠ Sin MR'; }
 }
 
 function updateStatusBar() {
-  const allSubs = new Set(payload.map(s => s.subCode));
   const params = Object.keys(tableData);
-  let totalReadings = 0, filledReadings = 0, tablesWithMR = 0;
-
-  params.forEach(param => {
-    const rows = tableData[param];
-    rows.forEach(r => {
-      totalReadings++;
-      if (r.lectura.trim()) filledReadings++;
-    });
-    if (rows.some(r => r.mr.trim())) tablesWithMR++;
+  let totalR=0, filledR=0, tabsMR=0;
+  params.forEach(p => {
+    tableData[p].forEach(r => { totalR++; if(r.lectura.trim()) filledR++; });
+    if (tableData[p].some(r=>r.mr.trim())) tabsMR++;
   });
+  const missing = totalR-filledR;
+  const mrOk    = tabsMR===params.length;
+  const allSubs = new Set(payload.map(s=>s.subCode)).size;
 
-  const missing = totalReadings - filledReadings;
-  const mrOk = tablesWithMR === params.length;
-
-  document.getElementById('stTotal').textContent = `${allSubs.size} muestras · ${params.length} parámetros`;
-  document.getElementById('stMissing').textContent = missing > 0 ? `${missing} lecturas faltantes` : '✓ Todas las lecturas ingresadas';
-  document.getElementById('stMR').textContent = mrOk ? `✓ MR presente en todas las tablas` : `⚠ ${params.length - tablesWithMR} tabla(s) sin MR`;
+  document.getElementById('stTotal').textContent   = `${allSubs} muestras · ${params.length} parámetros`;
+  document.getElementById('stMissing').textContent = missing>0 ? `${missing} lecturas faltantes` : '✓ Todas las lecturas ingresadas';
+  document.getElementById('stMR').textContent      = mrOk ? '✓ MR en todas las tablas' : `⚠ ${params.length-tabsMR} tabla(s) sin MR`;
 }
 
+// EXTRA COLS
+function addCol(param) {
+  const name = prompt('Nombre de columna (ej: Dilución, Abs):');
+  if (!name?.trim()) return;
+  const col = name.trim();
+  if (!extraCols[param].includes(col)) {
+    extraCols[param].push(col);
+    tableData[param].forEach(r=>{ r.extra[col]=''; });
+    reRenderTable(param);
+  }
+}
+function removeCol(param, col) {
+  extraCols[param] = extraCols[param].filter(c=>c!==col);
+  tableData[param].forEach(r=>{ delete r.extra[col]; });
+  reRenderTable(param);
+}
+function reRenderTable(param) {
+  const el = document.getElementById('tc_'+slugify(param));
+  if (el) el.outerHTML = renderTable(param);
+}
+
+// ════════════════════════════════════════
+//  VALIDATE
+// ════════════════════════════════════════
 function validateAll() {
   const params = Object.keys(tableData);
-  let totalOk = 0, totalWarn = 0, totalError = 0;
+  let ok=0,warn=0,err=0;
+  params.forEach(p => {
+    const rows   = tableData[p];
+    const allLec = rows.every(r=>r.lectura.trim()!=='');
+    const hasMR  = rows.some(r=>r.mr.trim()!=='');
+    if (allLec&&hasMR) ok++;
+    else if (!allLec)  err++;
+    else               warn++;
+  });
+  renderAll(); // re-render to highlight empties
+  const card = document.getElementById('summaryCard');
+  card.style.display = 'block';
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="result-item"><div class="result-num green">${ok}</div><div class="result-label">Tablas OK</div></div>
+    <div class="result-item"><div class="result-num yellow">${warn}</div><div class="result-label">Sin MR</div></div>
+    <div class="result-item"><div class="result-num red">${err}</div><div class="result-label">Incompletas</div></div>
+    <div class="result-item"><div class="result-num blue">${params.length}</div><div class="result-label">Total params</div></div>`;
+  card.scrollIntoView({behavior:'smooth'});
+}
 
-  params.forEach(param => {
-    const rows = tableData[param];
-    const allLectura = rows.every(r => r.lectura.trim() !== '');
-    const hasMR = rows.some(r => r.mr.trim() !== '');
-    if (allLectura && hasMR) totalOk++;
-    else if (!allLectura) totalError++;
-    else totalWarn++;
-    updateTableStatus(param);
-    // highlight empty required cells
-    rows.forEach((r, i) => {
-      // Can't easily target inputs after render; re-render will highlight
+// ════════════════════════════════════════
+//  FIX #5 — PUSH RESULTS BACK TO index.html
+//  For every row that has a lectura filled, mark that param as done on the sub
+// ════════════════════════════════════════
+function pushResultsAndBack() {
+  // Build results array: [{subId, paramName}] for filled rows only
+  const results = [];
+  Object.entries(tableData).forEach(([paramName, rows]) => {
+    rows.forEach(r => {
+      if (r.lectura.trim()!=='') {
+        results.push({subId: r.subId, paramName});
+      }
     });
   });
 
-  // Re-render to apply highlighting
-  const container = document.getElementById('tablesContainer');
-  container.innerHTML = params.map(p => renderParamTable(p)).join('');
-
-  // Show summary
-  const summaryCard = document.getElementById('summaryCard');
-  summaryCard.style.display = 'block';
-  document.getElementById('summaryGrid').innerHTML = `
-    <div class="result-item"><div class="result-num green">${totalOk}</div><div class="result-label">Tablas OK</div></div>
-    <div class="result-item"><div class="result-num yellow">${totalWarn}</div><div class="result-label">Sin MR</div></div>
-    <div class="result-item"><div class="result-num red">${totalError}</div><div class="result-label">Incompletas</div></div>
-    <div class="result-item"><div class="result-num" style="color:var(--accent)">${params.length}</div><div class="result-label">Total parámetros</div></div>
-  `;
-  summaryCard.scrollIntoView({ behavior: 'smooth' });
+  if (results.length) {
+    sessionStorage.setItem('analysis_results', JSON.stringify(results));
+    showToast('✓ ' + results.length + ' parámetros marcados como completados');
+    setTimeout(()=>{ location.href='index.html'; }, 1200);
+  } else {
+    location.href = 'index.html';
+  }
 }
 
-function clearAll() {
-  if (!confirm('¿Limpiar todos los datos ingresados?')) return;
-  buildTables();
-  document.getElementById('summaryCard').style.display = 'none';
+function goBack() { location.href='index.html'; }
+
+function clearData() {
+  if (!confirm('¿Limpiar todos los datos ingresados en las tablas?')) return;
+  Object.values(tableData).forEach(rows => rows.forEach(r=>{ r.lectura=''; r.mr=''; r.extra={}; }));
+  renderAll(); updateStatusBar();
+  document.getElementById('summaryCard').style.display='none';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+// ════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function slugify(str) {
+  return String(str||'').replace(/[^a-z0-9]/gi,'_');
 }
 
 init();
