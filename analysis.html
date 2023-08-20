@@ -415,7 +415,7 @@ function validateAll() {
 }
 
 // ════════════════════════════════════════
-//  FIX #5 — PUSH RESULTS BACK TO index.html
+//  FIX #5 — PUSH RESULTS BACK TO status-pro5.html
 //  For every row that has a lectura filled, mark that param as done on the sub
 // ════════════════════════════════════════
 function pushResultsAndBack() {
@@ -432,13 +432,13 @@ function pushResultsAndBack() {
   if (results.length) {
     sessionStorage.setItem('analysis_results', JSON.stringify(results));
     showToast('✓ ' + results.length + ' parámetros marcados como completados');
-    setTimeout(()=>{ location.href='index.html'; }, 1200);
+    setTimeout(()=>{ location.href='status-pro5.html'; }, 1200);
   } else {
-    location.href = 'index.html';
+    location.href = 'status-pro5.html';
   }
 }
 
-function goBack() { location.href='index.html'; }
+function goBack() { location.href='status-pro5.html'; }
 
 function clearData() {
   if (!confirm('¿Limpiar todos los datos ingresados en las tablas?')) return;

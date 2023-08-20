@@ -6,20 +6,20 @@
 <title>LabStatus Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#080c14; --surface:#0d1421; --surface2:#111827; --border:#1e2d45;
-  --accent:#00d4ff; --green:#00e676; --yellow:#ffb300; --red:#ff4444;
-  --text:#e2e8f0; --muted:#64748b;
-  --font-mono:'Space Mono',monospace; --font-body:'DM Sans',sans-serif;
+:root{
+  --bg:#080c14;--surface:#0d1421;--surface2:#111827;--border:#1e2d45;
+  --accent:#00d4ff;--green:#00e676;--yellow:#ffb300;--red:#ff4444;
+  --text:#e2e8f0;--muted:#64748b;
+  --font-mono:'Space Mono',monospace;--font-body:'DM Sans',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;
   background-image:radial-gradient(ellipse at 20% 0%,rgba(0,212,255,.05) 0%,transparent 60%),
-    radial-gradient(ellipse at 80% 100%,rgba(0,136,170,.04) 0%,transparent 60%);}
+  radial-gradient(ellipse at 80% 100%,rgba(0,136,170,.04) 0%,transparent 60%);}
 
 /* HEADER */
 header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;
-  justify-content:space-between;background:rgba(13,20,33,.92);backdrop-filter:blur(12px);
+  justify-content:space-between;background:rgba(13,20,33,.95);backdrop-filter:blur(12px);
   position:sticky;top:0;z-index:100;}
 .logo{font-family:var(--font-mono);font-size:13px;color:var(--accent);letter-spacing:3px;}
 .header-nav{display:flex;gap:8px;align-items:center;}
@@ -29,8 +29,8 @@ header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;alig
 .nav-btn:hover,.nav-btn.active{border-color:var(--accent);color:var(--accent);}
 .header-stats{display:flex;gap:16px;font-size:11px;color:var(--muted);font-family:var(--font-mono);}
 .header-stats span b{color:var(--text);}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;
-  margin-right:5px;animation:pulse 2s infinite;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+  display:inline-block;margin-right:5px;animation:pulse 2s infinite;}
 .sync-dot.syncing{background:var(--yellow);}
 .sync-dot.error{background:var(--red);animation:none;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
@@ -38,27 +38,29 @@ header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;alig
 /* LAYOUT */
 .container{max-width:980px;margin:0 auto;padding:20px 14px;}
 
-/* FORM */
+/* ADD FORM */
 .add-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;
   padding:18px;margin-bottom:18px;position:relative;overflow:hidden;}
 .add-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,var(--accent),transparent);}
 .add-title{font-family:var(--font-mono);font-size:10px;color:var(--accent);
   letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;}
-.form-row{display:grid;grid-template-columns:1fr 1fr 1fr 80px;gap:8px;margin-bottom:8px;}
-.form-row-2{display:grid;grid-template-columns:1fr auto;gap:8px;}
-.input-wrap{}
+.form-row{display:grid;grid-template-columns:1fr 1.2fr 1fr 70px;gap:8px;margin-bottom:8px;}
+.form-row-2{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;}
 .input-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);
   letter-spacing:1px;margin-bottom:4px;text-transform:uppercase;}
-input,select{width:100%;background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);padding:9px 11px;font-family:var(--font-body);
-  font-size:13px;outline:none;transition:border-color .2s;}
-input:focus,select:focus{border-color:var(--accent);}
-input::placeholder{color:var(--muted);font-size:12px;}
-select option{background:var(--surface2);}
+
+/* Scoped inputs — ONLY inside .add-card so card renders don't inherit */
+.add-card input,.add-card select{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);padding:9px 11px;
+  font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .2s;}
+.add-card input:focus,.add-card select:focus{border-color:var(--accent);}
+.add-card input::placeholder{color:var(--muted);font-size:12px;}
+.add-card select option{background:var(--surface2);}
 .btn-add{background:var(--accent);color:#000;border:none;border-radius:8px;
-  padding:9px 20px;font-family:var(--font-mono);font-size:12px;font-weight:700;
-  cursor:pointer;white-space:nowrap;align-self:flex-end;transition:background .15s;}
+  padding:10px 22px;font-family:var(--font-mono);font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;transition:background .15s;}
 .btn-add:hover{background:#00aacc;}
 
 /* PROGRESS */
@@ -75,22 +77,21 @@ select option{background:var(--surface2);}
 .section-title{font-family:var(--font-mono);font-size:10px;color:var(--muted);
   letter-spacing:2px;text-transform:uppercase;flex:1;}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);
-  border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
+  border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;
+  font-family:var(--font-mono);transition:all .15s;}
 .btn-ghost:hover{border-color:var(--red);color:var(--red);}
 .btn-ghost.active-sel{border-color:var(--accent);color:var(--accent);}
-.btn-ghost.analyze-btn{border-color:var(--yellow);color:var(--yellow);}
-.btn-ghost.analyze-btn:hover{background:rgba(255,179,0,.08);}
 .badge-count{background:var(--border);color:var(--muted);font-family:var(--font-mono);
   font-size:10px;padding:2px 6px;border-radius:4px;}
 
-/* ORDER CARD (padre) */
+/* ORDER CARD */
 .order-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
   margin-bottom:8px;overflow:hidden;transition:border-color .2s;}
 .order-card:hover{border-color:#2a3f5f;}
 .order-card.expanded{border-color:#2a3f5f;}
 .order-card.selected{border-color:var(--accent);background:rgba(0,212,255,.03);}
-
-.order-header{display:flex;align-items:center;padding:11px 15px;gap:10px;cursor:pointer;}
+.order-header{display:flex;align-items:center;padding:11px 15px;gap:10px;
+  cursor:pointer;user-select:none;}
 .order-check{width:17px;height:17px;border:1px solid var(--border);border-radius:4px;
   flex-shrink:0;display:flex;align-items:center;justify-content:center;
   font-size:10px;transition:all .15s;cursor:pointer;}
@@ -99,9 +100,9 @@ select option{background:var(--surface2);}
 .order-code{font-family:var(--font-mono);font-size:14px;color:var(--text);font-weight:700;}
 .order-meta{font-size:11px;color:var(--muted);margin-top:2px;}
 .order-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.param-chips{display:flex;gap:4px;flex-wrap:wrap;}
+.param-chips{display:flex;gap:4px;flex-wrap:wrap;max-width:280px;}
 .chip{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:4px;
-  border:1px solid var(--border);color:var(--muted);background:var(--surface2);}
+  border:1px solid var(--border);color:var(--muted);background:var(--surface2);white-space:nowrap;}
 .chip.done{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.08);}
 .chip.wip{border-color:var(--yellow);color:var(--yellow);background:rgba(255,179,0,.08);}
 .status-pill{font-family:var(--font-mono);font-size:10px;padding:3px 9px;
@@ -110,13 +111,13 @@ select option{background:var(--surface2);}
 .pill-e{background:rgba(255,179,0,.1);color:var(--yellow);border:1px solid rgba(255,179,0,.2);}
 .pill-c{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);}
 .btn-icon{background:transparent;border:1px solid var(--border);color:var(--muted);
-  border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:12px;transition:all .15s;flex-shrink:0;}
+  border-radius:6px;width:28px;height:28px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:12px;transition:all .15s;flex-shrink:0;}
 .btn-icon:hover{border-color:var(--red);color:var(--red);}
 .expand-arr{color:var(--muted);font-size:11px;transition:transform .2s;user-select:none;flex-shrink:0;}
 .order-card.expanded .expand-arr{transform:rotate(90deg);}
 
-/* ORDER BODY */
+/* BODY */
 .order-body{border-top:1px solid var(--border);padding:14px;display:none;background:rgba(0,0,0,.12);}
 .order-body.open{display:block;}
 
@@ -126,71 +127,80 @@ select option{background:var(--surface2);}
 .edit-section-title{font-family:var(--font-mono);font-size:10px;color:var(--accent);
   letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;}
 .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.edit-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-bottom:3px;
-  letter-spacing:1px;text-transform:uppercase;}
+.edit-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);
+  margin-bottom:3px;letter-spacing:1px;text-transform:uppercase;}
 .edit-field{width:100%;background:var(--surface2);border:1px solid var(--accent);
-  border-radius:6px;color:var(--text);padding:6px 9px;font-family:var(--font-mono);
-  font-size:12px;outline:none;}
+  border-radius:6px;color:var(--text);padding:6px 9px;
+  font-family:var(--font-mono);font-size:12px;outline:none;}
 .btn-save-edit{background:var(--accent);color:#000;border:none;border-radius:6px;
-  padding:6px 14px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;margin-top:8px;}
+  padding:6px 14px;font-family:var(--font-mono);font-size:11px;font-weight:700;
+  cursor:pointer;margin-top:8px;}
 .btn-save-edit:hover{background:#00aacc;}
 
-/* SUB-SAMPLES LIST */
+/* SUB CARDS */
 .sub-list-title{font-family:var(--font-mono);font-size:10px;color:var(--muted);
   letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;}
-.sub-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
-  margin-bottom:6px;overflow:hidden;}
-.sub-header{display:flex;align-items:center;padding:9px 12px;gap:8px;cursor:pointer;}
+.sub-card{background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;margin-bottom:6px;overflow:hidden;}
+.sub-header{display:flex;align-items:center;padding:9px 12px;gap:8px;
+  cursor:pointer;user-select:none;}
 .sub-code{font-family:var(--font-mono);font-size:12px;color:var(--accent);font-weight:700;flex:1;}
 .sub-chips{display:flex;gap:4px;flex-wrap:wrap;}
 .sub-body{border-top:1px solid var(--border);padding:12px;display:none;background:rgba(0,0,0,.1);}
 .sub-body.open{display:block;}
-.sub-card.sub-expanded .expand-arr{transform:rotate(90deg);}
+.sub-card.sub-exp .expand-arr{transform:rotate(90deg);}
 
-/* PARAM LIST */
+/* PARAM ROWS */
 .param-list-title{font-family:var(--font-mono);font-size:10px;color:var(--muted);
   letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;}
 .param-row{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;
   background:var(--surface);border:1px solid var(--border);margin-bottom:5px;}
 .param-check-btn{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);
-  background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;font-size:10px;transition:all .15s;}
+  background:transparent;cursor:pointer;flex-shrink:0;display:flex;
+  align-items:center;justify-content:center;font-size:10px;transition:all .15s;}
 .param-check-btn.done{border-color:var(--green);background:var(--green);color:#000;}
+.param-check-btn.auto{border-color:var(--accent);background:var(--accent);color:#000;}
 .param-name{font-family:var(--font-mono);font-size:12px;flex:1;}
-.param-status-txt{font-size:11px;color:var(--muted);}
-.param-del-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;
+.param-st{font-size:11px;}
+.param-del{background:transparent;border:none;color:var(--muted);cursor:pointer;
   font-size:10px;padding:2px 4px;border-radius:3px;transition:color .15s;}
-.param-del-btn:hover{color:var(--red);}
+.param-del:hover{color:var(--red);}
+
+/* ADD PARAM ROW — uses its own input style to avoid conflict with .add-card */
 .add-param-row{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
-.add-param-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:6px;
-  color:var(--text);padding:6px 9px;font-family:var(--font-mono);font-size:11px;outline:none;}
-.add-param-input:focus{border-color:var(--accent);}
-.add-param-input::placeholder{color:var(--muted);}
+.add-param-row input{
+  flex:1;background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);padding:6px 9px;font-family:var(--font-mono);font-size:11px;outline:none;width:auto;}
+.add-param-row input:focus{border-color:var(--accent);}
+.add-param-row input::placeholder{color:var(--muted);}
 .btn-add-param{background:var(--accent);color:#000;border:none;border-radius:6px;
   padding:6px 11px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;}
 .btn-add-param:hover{background:#00aacc;}
 
-/* ADD SUBSAMPLE */
-.add-sub-row{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
-.add-sub-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:6px;
-  color:var(--text);padding:6px 9px;font-family:var(--font-mono);font-size:11px;outline:none;}
-.add-sub-input:focus{border-color:var(--yellow);}
-.add-sub-input::placeholder{color:var(--muted);}
+/* ADD SUB ROW */
+.add-sub-row{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);align-items:center;}
+.add-sub-row span{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:1;}
 .btn-add-sub{background:var(--yellow);color:#000;border:none;border-radius:6px;
-  padding:6px 11px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;}
+  padding:6px 12px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
 
-/* STATUS BODY ACTIONS */
-.body-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap;}
+/* BODY ACTIONS */
+.body-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;
+  border-top:1px solid var(--border);flex-wrap:wrap;align-items:center;}
 .body-select{background:var(--surface);border:1px solid var(--border);border-radius:6px;
-  color:var(--text);padding:5px 9px;font-size:11px;font-family:var(--font-mono);cursor:pointer;outline:none;}
+  color:var(--text);padding:5px 9px;font-size:11px;font-family:var(--font-mono);
+  cursor:pointer;outline:none;}
 .body-select:focus{border-color:var(--accent);}
+.body-select option{background:var(--surface2);}
 .btn-note{background:transparent;border:1px solid var(--border);color:var(--muted);
-  border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
+  border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;
+  font-family:var(--font-mono);transition:all .15s;}
 .btn-note:hover{border-color:var(--accent);color:var(--accent);}
-.note-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;
-  color:var(--text);padding:8px 10px;font-family:var(--font-body);font-size:12px;outline:none;
-  resize:vertical;min-height:54px;margin-top:8px;}
-.note-input:focus{border-color:var(--accent);}
+.note-wrap{margin-top:8px;}
+.note-wrap textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);padding:8px 10px;font-family:var(--font-body);font-size:12px;
+  outline:none;resize:vertical;min-height:54px;}
+.note-wrap textarea:focus{border-color:var(--accent);}
 
 /* BULK BAR */
 .bulk-bar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
@@ -199,15 +209,15 @@ select option{background:var(--surface2);}
   box-shadow:0 8px 32px rgba(0,212,255,.15);}
 .bulk-bar.visible{display:flex;}
 .bulk-count{font-family:var(--font-mono);font-size:12px;color:var(--accent);}
-.btn-bulk-del{background:var(--red);color:#fff;border:none;border-radius:6px;
-  padding:6px 13px;font-size:11px;font-family:var(--font-mono);cursor:pointer;}
 .btn-bulk-analyze{background:var(--yellow);color:#000;border:none;border-radius:6px;
   padding:6px 13px;font-size:11px;font-family:var(--font-mono);cursor:pointer;font-weight:700;}
+.btn-bulk-del{background:var(--red);color:#fff;border:none;border-radius:6px;
+  padding:6px 13px;font-size:11px;font-family:var(--font-mono);cursor:pointer;}
 .btn-bulk-cancel{background:transparent;border:1px solid var(--border);color:var(--muted);
   border-radius:6px;padding:6px 13px;font-size:11px;cursor:pointer;font-family:var(--font-mono);}
 
 /* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);
   z-index:500;display:none;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;
@@ -221,7 +231,7 @@ select option{background:var(--surface2);}
   border-radius:6px;padding:7px 14px;font-size:11px;cursor:pointer;font-family:var(--font-mono);}
 
 /* EMPTY / SKELETON */
-.empty{text-align:center;padding:30px;color:var(--muted);font-size:12px;font-family:var(--font-mono);}
+.empty{text-align:center;padding:28px;color:var(--muted);font-size:12px;font-family:var(--font-mono);}
 .skeleton{background:var(--surface);border:1px solid var(--border);border-radius:10px;
   padding:13px;margin-bottom:7px;overflow:hidden;position:relative;}
 .skeleton::after{content:'';position:absolute;inset:0;
@@ -229,11 +239,9 @@ select option{background:var(--surface2);}
   animation:shimmer 1.4s infinite;}
 @keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
 .skel-line{height:11px;background:var(--border);border-radius:4px;margin-bottom:7px;}
-
-/* HISTORY SECTION */
 .history-section{margin-top:22px;}
 
-@media(max-width:600px){
+@media(max-width:620px){
   .form-row{grid-template-columns:1fr 1fr;}
   .header-stats{display:none;}
   .param-chips,.sub-chips{display:none;}
@@ -245,8 +253,8 @@ select option{background:var(--surface2);}
 <header>
   <div class="logo">◈ LABSTATUS</div>
   <div class="header-nav">
-    <button class="nav-btn active" onclick="window.location.href='index.html'">Muestras</button>
-    <button class="nav-btn" onclick="window.location.href='analysis.html'">⚗ Análisis</button>
+    <button class="nav-btn active">Muestras</button>
+    <button class="nav-btn" onclick="location.href='analysis.html'">⚗ Análisis</button>
   </div>
   <div class="header-stats">
     <span><b id="hTotal">0</b> OS</span>
@@ -277,30 +285,29 @@ select option{background:var(--surface2);}
 </div>
 
 <div class="container">
-
   <!-- FORM -->
   <div class="add-card">
     <div class="add-title">+ Nueva orden de servicio</div>
     <div class="form-row">
-      <div class="input-wrap">
+      <div>
         <div class="input-label">Código OS *</div>
-        <input id="fCode" placeholder="ej. 9345 o ICP1"/>
+        <input id="fCode" placeholder="ej. 9345 o ICP1">
       </div>
-      <div class="input-wrap">
+      <div>
         <div class="input-label">Parámetros (separados por coma)</div>
-        <input id="fParams" placeholder="ej. Au, Ag, Cu"/>
+        <input id="fParams" placeholder="ej. Au, Ag, Cu">
       </div>
-      <div class="input-wrap">
+      <div>
         <div class="input-label">Cliente</div>
-        <input id="fClient" placeholder="Nombre del cliente"/>
+        <input id="fClient" placeholder="Nombre del cliente">
       </div>
-      <div class="input-wrap">
+      <div>
         <div class="input-label">N muestras</div>
-        <input id="fN" type="number" min="1" placeholder="1"/>
+        <input id="fN" type="number" min="1" placeholder="1">
       </div>
     </div>
     <div class="form-row-2">
-      <div class="input-wrap">
+      <div>
         <div class="input-label">Estado inicial</div>
         <select id="fStatus">
           <option value="Pendiente">Pendiente</option>
@@ -325,7 +332,7 @@ select option{background:var(--surface2);}
   </div>
   <div id="activeList"></div>
 
-  <!-- HISTORY -->
+  <!-- HISTORY — FIX #1: always rendered -->
   <div class="history-section">
     <div class="toolbar">
       <span class="section-title">Historial completadas <span class="badge-count" id="countHistory">0</span></span>
@@ -335,382 +342,469 @@ select option{background:var(--surface2);}
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────
-const BIN_URL = "https://api.jsonbin.io/v3/b/69ef96e636566621a8fa0813";
-const BIN_KEY = "$2a$10$y5s3F5YdWIB9axb55/V4TuK6E/1Z5Sod/pyqxbn5H/aBLjoTAYapS";
-const CACHE_KEY = "labstatus_v4";
+// ════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════
+const BIN_URL  = "https://api.jsonbin.io/v3/b/69ef96e636566621a8fa0813";
+const BIN_KEY  = "$2a$10$y5s3F5YdWIB9axb55/V4TuK6E/1Z5Sod/pyqxbn5H/aBLjoTAYapS";
+const CACHE_KEY= "labstatus_v5";
 
-// orders[] = [{id, code, client, status, params[], subsamples[], note, createdAt}]
-// subsamples[] = [{id, code, status, params[], note}]
-// params[] = [{name, done}]
+// Schema:
+// orders[]   → {id, code, client, params[], subsamples[], createdAt}
+// subsamples → {id, code, status, params[], note}
+// params     → {name, done, auto}   — auto=true means completed from analysis page
 
-let orders = [];
-let expandedOrderId = null;
-let expandedSubId = null;
+let orders        = [];
+let expandedOrder = null;  // order id currently open
+let expandedSub   = null;  // sub id currently open
 let selectionMode = false;
-let selectedIds = new Set(); // order IDs
+let selectedIds   = new Set();
 let pendingDelete = null;
 
-// ── INIT ────────────────────────────────────────
+// ════════════════════════════════════════
+//  INIT — instant from cache, background sync
+// ════════════════════════════════════════
 function init() {
-  const cached = localStorage.getItem(CACHE_KEY);
-  if (cached) {
-    try { orders = JSON.parse(cached); render(); } catch(e) { orders = []; showSkeletons(); }
-  } else { showSkeletons(); }
+  // FIX #5: apply any param completions pushed from analysis page
+  applyAnalysisResults();
+
+  const raw = localStorage.getItem(CACHE_KEY);
+  if (raw) {
+    try { orders = JSON.parse(raw); render(); } catch(e) { orders=[]; showSkeleton(); }
+  } else { showSkeleton(); }
+
   loadRemote();
   setInterval(loadRemote, 30000);
 }
-function showSkeletons() {
+
+function showSkeleton() {
   document.getElementById('activeList').innerHTML =
     '<div class="skeleton"><div class="skel-line" style="width:35%"></div><div class="skel-line" style="width:20%"></div></div>'.repeat(2);
 }
+
 function setSyncStatus(s) {
-  document.getElementById('syncDot').className = 'sync-dot' + (s==='syncing'?' syncing':s==='error'?' error':'');
-  document.getElementById('syncTxt').textContent = s==='syncing'?'sync...':s==='error'?'offline':'ok';
+  document.getElementById('syncDot').className =
+    'sync-dot' + (s==='syncing'?' syncing' : s==='error'?' error' : '');
+  document.getElementById('syncTxt').textContent =
+    s==='syncing' ? 'sync...' : s==='error' ? 'offline' : 'ok';
 }
+
 async function loadRemote() {
   setSyncStatus('syncing');
   try {
-    const res = await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':BIN_KEY}});
-    if(!res.ok) throw 0;
+    const res  = await fetch(BIN_URL+'/latest', {headers:{'X-Master-Key':BIN_KEY}});
+    if (!res.ok) throw 0;
     const data = await res.json();
     orders = data.record?.orders || [];
     sortOrders();
     localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
-    render(); setSyncStatus('ok');
-  } catch(e){ setSyncStatus('error'); }
+    render();
+    setSyncStatus('ok');
+  } catch(e) { setSyncStatus('error'); }
 }
+
 async function saveRemote() {
   setSyncStatus('syncing');
   localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
   try {
-    await fetch(BIN_URL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':BIN_KEY},
-      body:JSON.stringify({orders})});
+    await fetch(BIN_URL, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':BIN_KEY},
+      body: JSON.stringify({orders})
+    });
     setSyncStatus('ok');
-  } catch(e){ setSyncStatus('error'); }
+  } catch(e) { setSyncStatus('error'); }
 }
 
-// ── SORT ────────────────────────────────────────
+// ════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════
+const pad3 = n => String(n).padStart(3,'0');
+const pillClass = s => s==='Pendiente'?'pill-p' : s==='En proceso'?'pill-e' : 'pill-c';
+
+function mkParams(raw) {
+  return raw.split(',').map(p=>p.trim()).filter(Boolean).map(name=>({name, done:false, auto:false}));
+}
+function cloneParams(params) {
+  return params.map(p=>({name:p.name, done:false, auto:false}));
+}
 function sortOrders() {
-  orders.sort((a,b) => a.code.localeCompare(b.code, undefined, {numeric:true, sensitivity:'base'}));
+  orders.sort((a,b)=>a.code.localeCompare(b.code, undefined, {numeric:true, sensitivity:'base'}));
 }
 
-// ── HELPERS ─────────────────────────────────────
-function pad3(n){ return String(n).padStart(3,'0'); }
-function makeParams(raw) {
-  return raw.split(',').map(p=>p.trim()).filter(Boolean).map(name=>({name,done:false}));
-}
-function cloneParams(params) { return params.map(p=>({...p})); }
 function orderStatus(o) {
-  if(!o.subsamples || o.subsamples.length===0) return o.status;
-  const statuses = o.subsamples.map(s=>s.status);
-  if(statuses.every(s=>s==='Completado')) return 'Completado';
-  if(statuses.some(s=>s==='En proceso'||s==='Completado')) return 'En proceso';
+  const subs = o.subsamples||[];
+  if (!subs.length) return 'Pendiente';
+  const sts = subs.map(s=>s.status);
+  if (sts.every(s=>s==='Completado'))  return 'Completado';
+  if (sts.some(s=>s==='En proceso'||s==='Completado')) return 'En proceso';
   return 'Pendiente';
 }
-function pillClass(s){ return s==='Pendiente'?'pill-p':s==='En proceso'?'pill-e':'pill-c'; }
 
-// ── ADD ORDER ───────────────────────────────────
+function autoSyncStatus(s) {
+  if (!s.params.length) return;
+  if (s.params.every(p=>p.done))       { s.status='Completado'; return; }
+  if (s.params.some(p=>p.done) && s.status==='Pendiente') s.status='En proceso';
+  if (s.params.some(p=>!p.done) && s.status==='Completado') s.status='En proceso';
+}
+
+// ════════════════════════════════════════
+//  ADD ORDER
+//  FIX #3: render() is NOT called while typing — only on submit
+//  FIX #4: N=1 → single mode (subsamples.length===1, no sub-list UI)
+// ════════════════════════════════════════
 function addOrder() {
   const code = document.getElementById('fCode').value.trim();
-  if(!code){ shake('fCode'); return; }
+  if (!code) { shake('fCode'); return; }
+
   const paramsRaw = document.getElementById('fParams').value.trim();
-  const client = document.getElementById('fClient').value.trim();
-  const nRaw = parseInt(document.getElementById('fN').value) || 1;
-  const n = Math.max(1, Math.min(nRaw, 999));
-  const status = document.getElementById('fStatus').value;
-  const baseParams = paramsRaw ? makeParams(paramsRaw) : [];
+  const client    = document.getElementById('fClient').value.trim();
+  const n         = Math.max(1, Math.min(parseInt(document.getElementById('fN').value)||1, 999));
+  const status    = document.getElementById('fStatus').value;
+  const baseParams= paramsRaw ? mkParams(paramsRaw) : [];
 
-  const subsamples = [];
-  for(let i=1; i<=n; i++){
-    subsamples.push({
-      id: Date.now().toString()+i,
-      code: code+'/'+pad3(i),
-      status,
-      params: cloneParams(baseParams),
-      note: ''
-    });
-  }
-  orders.push({id:Date.now().toString(), code, client, params:baseParams, subsamples, note:'', createdAt:new Date().toISOString()});
+  const subsamples = Array.from({length:n}, (_,i) => ({
+    id:     Date.now().toString(36) + Math.random().toString(36).slice(2) + i,
+    code:   code + '/' + pad3(i+1),
+    status,
+    params: cloneParams(baseParams),
+    note:   ''
+  }));
+
+  orders.push({
+    id:        Date.now().toString(36) + Math.random().toString(36).slice(2),
+    code, client,
+    params:    baseParams,
+    subsamples,
+    createdAt: new Date().toISOString()
+  });
   sortOrders();
-  document.getElementById('fCode').value='';
-  document.getElementById('fParams').value='';
-  document.getElementById('fClient').value='';
-  document.getElementById('fN').value='';
-  render(); saveRemote();
-}
-function shake(id){
-  const el=document.getElementById(id);
-  el.style.borderColor='var(--red)';
-  setTimeout(()=>el.style.borderColor='',800);
+
+  // Clear inputs only after successful add — not during typing (FIX #3)
+  document.getElementById('fCode').value   = '';
+  document.getElementById('fParams').value = '';
+  document.getElementById('fClient').value = '';
+  document.getElementById('fN').value      = '';
+
+  render();
+  saveRemote();
 }
 
-// ── ADD SUBSAMPLE ────────────────────────────────
+function shake(id) {
+  const el = document.getElementById(id);
+  el.style.borderColor = 'var(--red)';
+  setTimeout(()=>{ el.style.borderColor=''; }, 700);
+}
+
+// ════════════════════════════════════════
+//  ADD / DELETE SUBSAMPLE
+// ════════════════════════════════════════
 function addSubsample(orderId) {
   const o = orders.find(x=>x.id===orderId);
-  if(!o) return;
-  const next = o.subsamples.length + 1;
-  const firstParams = o.subsamples.length > 0 ? cloneParams(o.subsamples[0].params) : cloneParams(o.params);
+  if (!o) return;
+  const srcParams = o.subsamples.length ? cloneParams(o.subsamples[0].params) : cloneParams(o.params);
   o.subsamples.push({
-    id: Date.now().toString(),
-    code: o.code+'/'+pad3(next),
+    id:     Date.now().toString(36) + Math.random().toString(36).slice(2),
+    code:   '',
     status: 'Pendiente',
-    params: firstParams,
-    note: ''
+    params: srcParams,
+    note:   ''
   });
-  // renumber
-  o.subsamples.forEach((s,i)=>{ s.code = o.code+'/'+pad3(i+1); });
-  expandedOrderId = orderId;
+  o.subsamples.forEach((s,i) => s.code = o.code+'/'+pad3(i+1));
+  expandedOrder = orderId;
   render(); saveRemote();
 }
 
 function deleteSubsample(orderId, subId) {
   const o = orders.find(x=>x.id===orderId);
-  if(!o) return;
+  if (!o) return;
   o.subsamples = o.subsamples.filter(s=>s.id!==subId);
-  o.subsamples.forEach((s,i)=>{ s.code = o.code+'/'+pad3(i+1); });
-  expandedOrderId = orderId;
+  o.subsamples.forEach((s,i) => s.code = o.code+'/'+pad3(i+1));
+  expandedOrder = orderId;
   render(); saveRemote();
 }
 
-// ── DELETE ORDER ─────────────────────────────────
+// ════════════════════════════════════════
+//  DELETE ORDER
+// ════════════════════════════════════════
 function confirmDelete(id) {
   const o = orders.find(x=>x.id===id);
-  pendingDelete={type:'single',id};
-  document.getElementById('modalTitle').textContent='⚠ Confirmar eliminación';
-  document.getElementById('modalMsg').textContent=`¿Eliminar OS "${o.code}" y todas sus muestras?`;
-  document.getElementById('modalConfirmBtn').onclick=executeDelete;
+  pendingDelete = {type:'single', id};
+  document.getElementById('modalTitle').textContent = '⚠ Confirmar eliminación';
+  document.getElementById('modalMsg').textContent   = `¿Eliminar OS "${o.code}" y todas sus muestras? Esta acción no se puede deshacer.`;
+  document.getElementById('modalConfirmBtn').onclick = executeDelete;
   document.getElementById('modalOverlay').classList.add('open');
 }
 function executeDelete() {
-  if(!pendingDelete) return;
-  if(pendingDelete.type==='single') orders=orders.filter(o=>o.id!==pendingDelete.id);
-  else { orders=orders.filter(o=>!selectedIds.has(o.id)); clearSelection(); }
+  if (!pendingDelete) return;
+  if (pendingDelete.type==='single') {
+    orders = orders.filter(o=>o.id!==pendingDelete.id);
+  } else {
+    orders = orders.filter(o=>!selectedIds.has(o.id));
+    clearSelection();
+  }
   closeModal(); render(); saveRemote();
 }
 function bulkDelete() {
-  pendingDelete={type:'bulk'};
-  document.getElementById('modalTitle').textContent='⚠ Eliminar seleccionadas';
-  document.getElementById('modalMsg').textContent=`¿Eliminar ${selectedIds.size} OS seleccionadas?`;
-  document.getElementById('modalConfirmBtn').onclick=executeDelete;
+  pendingDelete = {type:'bulk'};
+  document.getElementById('modalTitle').textContent = '⚠ Eliminar seleccionadas';
+  document.getElementById('modalMsg').textContent   = `¿Eliminar ${selectedIds.size} OS seleccionadas? Esta acción no se puede deshacer.`;
+  document.getElementById('modalConfirmBtn').onclick = executeDelete;
   document.getElementById('modalOverlay').classList.add('open');
 }
-function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); pendingDelete=null; }
-document.getElementById('modalOverlay').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  pendingDelete = null;
+}
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target===this) closeModal();
+});
 
-// ── SELECTION ────────────────────────────────────
-function toggleSelectionMode(){
-  selectionMode=!selectionMode;
-  if(!selectionMode) clearSelection();
-  document.getElementById('btnSelect').classList.toggle('active-sel',selectionMode);
-  document.getElementById('btnSelect').textContent=selectionMode?'✕ Cancelar':'☐ Seleccionar';
+// ════════════════════════════════════════
+//  SELECTION
+// ════════════════════════════════════════
+function toggleSelectionMode() {
+  selectionMode = !selectionMode;
+  if (!selectionMode) clearSelection();
+  document.getElementById('btnSelect').classList.toggle('active-sel', selectionMode);
+  document.getElementById('btnSelect').textContent = selectionMode ? '✕ Cancelar' : '☐ Seleccionar';
   render();
 }
-function toggleSelect(id){
-  if(selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+function toggleSelect(id) {
+  selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id);
   updateBulkBar(); render();
 }
-function clearSelection(){
-  selectedIds.clear(); selectionMode=false;
-  document.getElementById('btnSelect').textContent='☐ Seleccionar';
+function clearSelection() {
+  selectedIds.clear(); selectionMode = false;
+  document.getElementById('btnSelect').textContent = '☐ Seleccionar';
   document.getElementById('btnSelect').classList.remove('active-sel');
   updateBulkBar();
 }
-function updateBulkBar(){
-  const bar=document.getElementById('bulkBar');
-  if(selectedIds.size>0){
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  if (selectedIds.size > 0) {
     bar.classList.add('visible');
-    document.getElementById('bulkCount').textContent=`${selectedIds.size} seleccionada(s)`;
-  } else bar.classList.remove('visible');
+    document.getElementById('bulkCount').textContent = `${selectedIds.size} seleccionada(s)`;
+  } else {
+    bar.classList.remove('visible');
+  }
 }
 
-// ── GO ANALYZE ───────────────────────────────────
-function goAnalyze(){
-  // Collect all subsamples from selected orders, store in sessionStorage
+// ════════════════════════════════════════
+//  GO ANALYZE
+// ════════════════════════════════════════
+function goAnalyze() {
   const selected = orders.filter(o=>selectedIds.has(o.id));
-  // Flatten subsamples with their params
-  const payload = selected.flatMap(o => o.subsamples.map(s => ({
+  const payload  = selected.flatMap(o => o.subsamples.map(s => ({
+    orderId:   o.id,
     orderCode: o.code,
-    client: o.client,
-    subCode: s.code,
-    subId: s.id,
-    params: s.params.map(p=>p.name)
+    client:    o.client||'',
+    subCode:   s.code,
+    subId:     s.id,
+    params:    s.params.map(p=>p.name)
   })));
   sessionStorage.setItem('analyze_payload', JSON.stringify(payload));
-  window.location.href = 'analysis.html';
+  location.href = 'analysis.html';
 }
 
-// ── STATUS / PARAMS ──────────────────────────────
-function changeSubStatus(orderId, subId, val){
-  const o=orders.find(x=>x.id===orderId);
-  const s=o?.subsamples.find(x=>x.id===subId);
-  if(!s) return;
-  s.status=val;
-  if(val==='Completado') s.params.forEach(p=>p.done=true);
-  expandedOrderId=orderId; expandedSubId=subId;
-  render(); saveRemote();
+// ════════════════════════════════════════
+//  FIX #5 — apply analysis results back
+//  analysis.html stores completed params in sessionStorage
+//  key: 'analysis_results'  value: [{subId, paramName}]
+// ════════════════════════════════════════
+function applyAnalysisResults() {
+  const raw = sessionStorage.getItem('analysis_results');
+  if (!raw) return;
+  try {
+    const results = JSON.parse(raw); // [{subId, paramName}]
+    results.forEach(r => {
+      for (const o of orders) {
+        const s = o.subsamples.find(x=>x.id===r.subId);
+        if (!s) continue;
+        const p = s.params.find(x=>x.name===r.paramName);
+        if (p && !p.done) { p.done=true; p.auto=true; }
+        autoSyncStatus(s);
+      }
+    });
+    sessionStorage.removeItem('analysis_results');
+    localStorage.setItem(CACHE_KEY, JSON.stringify(orders));
+    saveRemote();
+  } catch(e){}
 }
-function toggleParam(orderId, subId, idx){
-  const o=orders.find(x=>x.id===orderId);
-  const s=o?.subsamples.find(x=>x.id===subId);
-  if(!s) return;
-  s.params[idx].done=!s.params[idx].done;
-  if(s.params.length>0 && s.params.every(p=>p.done)) s.status='Completado';
-  else if(s.params.some(p=>!p.done) && s.status==='Completado') s.status='En proceso';
-  expandedOrderId=orderId; expandedSubId=subId;
-  render(); saveRemote();
-}
-function addParamInline(orderId, subId){
-  const el=document.getElementById('newparam_'+subId);
-  if(!el) return;
-  const names=el.value.split(',').map(p=>p.trim()).filter(Boolean);
-  if(!names.length) return;
-  const o=orders.find(x=>x.id===orderId);
-  const s=o?.subsamples.find(x=>x.id===subId);
-  if(!s) return;
-  names.forEach(name=>s.params.push({name,done:false}));
-  el.value='';
-  expandedOrderId=orderId; expandedSubId=subId;
-  render(); saveRemote();
-}
-function deleteParam(orderId, subId, idx){
-  const o=orders.find(x=>x.id===orderId);
-  const s=o?.subsamples.find(x=>x.id===subId);
-  if(!s) return;
-  s.params.splice(idx,1);
-  if(s.params.length>0&&s.params.every(p=>p.done)) s.status='Completado';
-  else if(s.params.some(p=>!p.done)&&s.status==='Completado') s.status='En proceso';
-  expandedOrderId=orderId; expandedSubId=subId;
+
+// ════════════════════════════════════════
+//  STATUS & PARAMS
+// ════════════════════════════════════════
+function changeSubStatus(orderId, subId, val) {
+  const o = orders.find(x=>x.id===orderId);
+  const s = o?.subsamples.find(x=>x.id===subId);
+  if (!s) return;
+  s.status = val;
+  if (val==='Completado') s.params.forEach(p=>{ p.done=true; });
+  expandedOrder=orderId; expandedSub=subId;
   render(); saveRemote();
 }
 
-// ── INLINE EDIT ORDER ────────────────────────────
-function saveOrderEdit(id){
-  const o=orders.find(x=>x.id===id);
-  if(!o) return;
-  const codeEl=document.getElementById('edit_code_'+id);
-  const clientEl=document.getElementById('edit_client_'+id);
-  const newCode=codeEl?.value.trim()||o.code;
-  if(newCode!==o.code){
-    o.code=newCode;
-    o.subsamples.forEach((s,i)=>{ s.code=newCode+'/'+pad3(i+1); });
+// FIX #5: manual toggle always works; clears auto flag so user takes control
+function toggleParam(orderId, subId, idx) {
+  const o = orders.find(x=>x.id===orderId);
+  const s = o?.subsamples.find(x=>x.id===subId);
+  if (!s) return;
+  s.params[idx].done = !s.params[idx].done;
+  s.params[idx].auto = false; // manual override
+  autoSyncStatus(s);
+  expandedOrder=orderId; expandedSub=subId;
+  render(); saveRemote();
+}
+
+// FIX #3: addParamInline reads DOM value directly, does NOT re-render until after clear
+function addParamInline(orderId, subId) {
+  const el    = document.getElementById('ap_'+subId);
+  if (!el) return;
+  const names = el.value.split(',').map(p=>p.trim()).filter(Boolean);
+  if (!names.length) return;
+  const o = orders.find(x=>x.id===orderId);
+  const s = o?.subsamples.find(x=>x.id===subId);
+  if (!s) return;
+  names.forEach(name => s.params.push({name, done:false, auto:false}));
+  el.value = '';
+  expandedOrder=orderId; expandedSub=subId;
+  render(); saveRemote();
+}
+
+function deleteParam(orderId, subId, idx) {
+  const o = orders.find(x=>x.id===orderId);
+  const s = o?.subsamples.find(x=>x.id===subId);
+  if (!s) return;
+  s.params.splice(idx, 1);
+  autoSyncStatus(s);
+  expandedOrder=orderId; expandedSub=subId;
+  render(); saveRemote();
+}
+
+// ════════════════════════════════════════
+//  EDIT & NOTE — FIX #3: note saved on blur, no mid-type re-render
+// ════════════════════════════════════════
+function saveOrderEdit(id) {
+  const o       = orders.find(x=>x.id===id);
+  if (!o) return;
+  const codeEl  = document.getElementById('ec_'+id);
+  const clientEl= document.getElementById('ecl_'+id);
+  const newCode = codeEl?.value.trim() || o.code;
+  if (newCode !== o.code) {
+    o.code = newCode;
+    o.subsamples.forEach((s,i) => s.code = newCode+'/'+pad3(i+1));
   }
-  if(clientEl) o.client=clientEl.value.trim();
+  if (clientEl) o.client = clientEl.value.trim();
   sortOrders();
-  expandedOrderId=id;
+  expandedOrder = id;
   render(); saveRemote();
 }
 
-function saveNote(orderId, subId){
-  const el=document.getElementById('note_'+subId);
-  if(!el) return;
-  const o=orders.find(x=>x.id===orderId);
-  const s=o?.subsamples.find(x=>x.id===subId);
-  if(!s) return;
-  s.note=el.value;
-  saveRemote();
+function saveNote(orderId, subId) {
+  const el = document.getElementById('nt_'+subId);
+  if (!el) return;
+  const o = orders.find(x=>x.id===orderId);
+  const s = o?.subsamples.find(x=>x.id===subId);
+  if (s) { s.note = el.value; saveRemote(); }
 }
 
-// ── EXPAND ───────────────────────────────────────
-function toggleOrder(id){
-  if(selectionMode){ toggleSelect(id); return; }
-  expandedOrderId = expandedOrderId===id ? null : id;
-  expandedSubId=null;
+// ════════════════════════════════════════
+//  EXPAND / COLLAPSE
+// ════════════════════════════════════════
+function toggleOrder(id) {
+  if (selectionMode) { toggleSelect(id); return; }
+  expandedOrder = expandedOrder===id ? null : id;
+  expandedSub   = null;
   render();
 }
-function toggleSub(subId){
-  expandedSubId = expandedSubId===subId ? null : subId;
+function toggleSub(subId) {
+  expandedSub = expandedSub===subId ? null : subId;
   render();
 }
-function toggleNote(subId){
-  const el=document.getElementById('notearea_'+subId);
-  if(el) el.style.display=el.style.display==='none'?'block':'none';
+function toggleNote(subId) {
+  const el = document.getElementById('nw_'+subId);
+  if (el) el.style.display = el.style.display==='none' ? 'block' : 'none';
 }
 
-// ── RENDER ───────────────────────────────────────
-function render(){
-  // Compute status from subsamples
-  orders.forEach(o=>{ o._computed=orderStatus(o); });
+// ════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════
+function render() {
+  orders.forEach(o => o._st = orderStatus(o));
 
-  const active=orders.filter(o=>o._computed!=='Completado');
-  const history=orders.filter(o=>o._computed==='Completado');
-  const totalSubs=orders.reduce((a,o)=>a+o.subsamples.length,0);
-  const doneSubs=orders.reduce((a,o)=>a+o.subsamples.filter(s=>s.status==='Completado').length,0);
-  const pct=totalSubs?Math.round(doneSubs/totalSubs*100):0;
+  const active  = orders.filter(o=>o._st!=='Completado');
+  const history = orders.filter(o=>o._st==='Completado');
 
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('progressPct').textContent=pct+'%';
-  document.getElementById('hTotal').textContent=orders.length;
-  document.getElementById('hSubs').textContent=totalSubs;
-  document.getElementById('hDone').textContent=history.length;
-  document.getElementById('countActive').textContent=active.length;
-  document.getElementById('countHistory').textContent=history.length;
+  const totalSubs = orders.reduce((a,o)=>a+o.subsamples.length, 0);
+  const doneSubs  = orders.reduce((a,o)=>a+o.subsamples.filter(s=>s.status==='Completado').length, 0);
+  const pct = totalSubs ? Math.round(doneSubs/totalSubs*100) : 0;
 
-  document.getElementById('activeList').innerHTML=active.length
-    ? active.map(o=>renderOrder(o)).join('')
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressPct').textContent  = pct+'%';
+  document.getElementById('hTotal').textContent  = orders.length;
+  document.getElementById('hSubs').textContent   = totalSubs;
+  document.getElementById('hDone').textContent   = history.length;
+  document.getElementById('countActive').textContent  = active.length;
+  document.getElementById('countHistory').textContent = history.length;
+
+  document.getElementById('activeList').innerHTML = active.length
+    ? active.map(renderOrder).join('')
     : '<div class="empty">◈ No hay órdenes activas</div>';
 
-  document.getElementById('historyList').innerHTML=history.length
-    ? history.map(o=>renderOrder(o)).join('')
-    : '<div class="empty" style="padding:16px;font-size:10px">Sin historial</div>';
+  // FIX #1: always render history section (even empty placeholder)
+  document.getElementById('historyList').innerHTML = history.length
+    ? history.map(renderOrder).join('')
+    : '<div class="empty" style="padding:14px;font-size:10px">Sin historial aún</div>';
 }
 
-function renderOrder(o){
-  const isExp=expandedOrderId===o.id;
-  const isSel=selectedIds.has(o.id);
-  const st=o._computed||orderStatus(o);
-  const n=o.subsamples.length;
+// ════════════════════════════════════════
+//  renderOrder
+//  FIX #4: N=1 → single flat view, no sub-list header
+// ════════════════════════════════════════
+function renderOrder(o) {
+  const isExp    = expandedOrder===o.id;
+  const isSel    = selectedIds.has(o.id);
+  const st       = o._st || orderStatus(o);
+  const n        = o.subsamples.length;
+  const isSingle = n===1;  // FIX #4
 
-  // Display code in header
-  let displayCode=o.code;
-  if(n>1){
-    displayCode=`${o.code}/<span style="color:var(--muted)">(001–${pad3(n)})</span>`;
-  }
+  // Header code
+  // Single  → "9345/001"
+  // Multi   → "9345/(001–003)"
+  const displayCode = isSingle
+    ? o.subsamples[0].code
+    : `${o.code}/<span style="color:var(--muted)">(001–${pad3(n)})</span>`;
 
-  // Aggregate chips: unique params across all subs, green if all done
-  const paramMap={};
+  // Aggregate param chips
+  const pm = {};
   o.subsamples.forEach(s=>s.params.forEach(p=>{
-    if(!paramMap[p.name]) paramMap[p.name]={total:0,done:0};
-    paramMap[p.name].total++;
-    if(p.done) paramMap[p.name].done++;
+    if (!pm[p.name]) pm[p.name]={tot:0,done:0};
+    pm[p.name].tot++;
+    if (p.done) pm[p.name].done++;
   }));
-  const chipsHtml=Object.entries(paramMap).map(([name,v])=>`
-    <span class="chip ${v.done===v.total&&v.total>0?'done':v.done>0?'wip':''}">${name}${v.done===v.total&&v.total>0?' ✓':''}</span>`).join('')
-    || `<span style="font-size:10px;color:var(--muted);font-family:var(--font-mono)">sin params</span>`;
+  const chipsHtml = Object.entries(pm).map(([name,v])=>
+    `<span class="chip ${v.done===v.tot&&v.tot>0?'done':v.done>0?'wip':''}">${name}${v.done===v.tot&&v.tot>0?' ✓':''}</span>`
+  ).join('') || `<span style="font-size:10px;color:var(--muted);font-family:var(--font-mono)">sin params</span>`;
 
-  const checkHtml=selectionMode
+  const checkHtml = selectionMode
     ? `<div class="order-check ${isSel?'checked':''}" onclick="event.stopPropagation();toggleSelect('${o.id}')">${isSel?'✓':''}</div>`
     : '';
 
-  // Edit section
-  const editHtml=`
-    <div class="edit-section">
-      <div class="edit-section-title">✎ Editar OS</div>
-      <div class="edit-grid">
-        <div><div class="edit-label">Código</div>
-          <input class="edit-field" id="edit_code_${o.id}" value="${o.code}" onkeydown="if(event.key==='Enter')saveOrderEdit('${o.id}')"/></div>
-        <div><div class="edit-label">Cliente</div>
-          <input class="edit-field" id="edit_client_${o.id}" value="${o.client||''}" placeholder="Cliente" onkeydown="if(event.key==='Enter')saveOrderEdit('${o.id}')"/></div>
-      </div>
-      <button class="btn-save-edit" onclick="saveOrderEdit('${o.id}')">Guardar</button>
-    </div>`;
+  const metaHtml = o.client
+    ? `<div class="order-meta">${o.client}${!isSingle?' · '+n+' muestras':''}</div>`
+    : (!isSingle ? `<div class="order-meta">${n} muestras</div>` : '');
 
-  // Subsamples list
-  const subsHtml=`
-    <div class="sub-list-title">Muestras internas (${o.subsamples.filter(s=>s.status==='Completado').length}/${n} completadas)</div>
-    ${o.subsamples.map(s=>renderSub(o.id,s)).join('')}
-    <div class="add-sub-row">
-      <input class="add-sub-input" placeholder="Añadir submuestra (hereda params de la primera)"/>
-      <button class="btn-add-sub" onclick="addSubsample('${o.id}')">+ Submuestra</button>
-    </div>`;
+  // Body: single = flat edit+params; multi = edit + sub-list
+  const bodyHtml = isSingle ? renderSingleBody(o) : renderMultiBody(o);
 
   return `
-  <div class="order-card ${isExp?'expanded':''} ${isSel?'selected':''}" id="ocard_${o.id}">
+  <div class="order-card ${isExp?'expanded':''} ${isSel?'selected':''}" id="oc_${o.id}">
     <div class="order-header" onclick="toggleOrder('${o.id}')">
       ${checkHtml}
       <div class="order-main">
         <div class="order-code">${displayCode}</div>
-        ${o.client?`<div class="order-meta">${o.client} · ${n} muestra${n>1?'s':''}</div>`:`<div class="order-meta">${n} muestra${n>1?'s':''}</div>`}
+        ${metaHtml}
       </div>
       <div class="param-chips">${chipsHtml}</div>
       <div class="order-right" onclick="event.stopPropagation()">
@@ -719,39 +813,89 @@ function renderOrder(o){
         <span class="expand-arr">▶</span>
       </div>
     </div>
-    <div class="order-body ${isExp?'open':''}">
-      ${editHtml}
-      ${subsHtml}
-    </div>
+    <div class="order-body ${isExp?'open':''}">${bodyHtml}</div>
   </div>`;
 }
 
-function renderSub(orderId, s){
-  const isExp=expandedSubId===s.id;
-  const doneCount=s.params.filter(p=>p.done).length;
-  const chipsHtml=s.params.map(p=>`
-    <span class="chip ${p.done?'done':s.status==='En proceso'?'wip':''}">${p.name}${p.done?' ✓':''}</span>`).join('')
-    || `<span style="font-size:10px;color:var(--muted)">sin params</span>`;
+// ════════════════════════════════════════
+//  FIX #4: SINGLE BODY — flat like old single sample
+// ════════════════════════════════════════
+function renderSingleBody(o) {
+  const s = o.subsamples[0];
+  return `
+  <div class="edit-section">
+    <div class="edit-section-title">✎ Editar muestra</div>
+    <div class="edit-grid">
+      <div>
+        <div class="edit-label">Código</div>
+        <input class="edit-field" id="ec_${o.id}" value="${escHtml(o.code)}"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();saveOrderEdit('${o.id}');}">
+      </div>
+      <div>
+        <div class="edit-label">Cliente</div>
+        <input class="edit-field" id="ecl_${o.id}" value="${escHtml(o.client||'')}" placeholder="Nombre del cliente"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();saveOrderEdit('${o.id}');}">
+      </div>
+    </div>
+    <button class="btn-save-edit" onclick="saveOrderEdit('${o.id}')">Guardar cambios</button>
+  </div>
+  ${renderParamBlock(o.id, s)}
+  <div class="body-actions">
+    <select class="body-select" onchange="changeSubStatus('${o.id}','${s.id}',this.value)">
+      <option ${s.status==='Pendiente'?'selected':''}>Pendiente</option>
+      <option ${s.status==='En proceso'?'selected':''}>En proceso</option>
+      <option ${s.status==='Completado'?'selected':''}>Completado</option>
+    </select>
+    <button class="btn-note" onclick="toggleNote('${s.id}')">📝 Notas</button>
+    <button class="btn-add-sub" style="font-size:10px;padding:5px 10px" onclick="addSubsample('${o.id}')">+ Submuestra</button>
+  </div>
+  <div id="nw_${s.id}" style="display:none" class="note-wrap">
+    <textarea id="nt_${s.id}" placeholder="Notas internas..." onblur="saveNote('${o.id}','${s.id}')">${escHtml(s.note||'')}</textarea>
+  </div>`;
+}
 
-  const paramsListHtml=`
-    <div class="param-list-title">Parámetros (${doneCount}/${s.params.length})</div>
-    ${s.params.map((p,i)=>`
-      <div class="param-row">
-        <button class="param-check-btn ${p.done?'done':''}" onclick="toggleParam('${orderId}','${s.id}',${i})">${p.done?'✓':''}</button>
-        <span class="param-name">${p.name}</span>
-        <span class="param-status-txt" style="color:${p.done?'var(--green)':s.status==='En proceso'?'var(--yellow)':'var(--muted)'}">${p.done?'✓ Listo':s.status==='En proceso'?'En proceso':'Pendiente'}</span>
-        <button class="param-del-btn" onclick="deleteParam('${orderId}','${s.id}',${i})">✕</button>
-      </div>`).join('')}
-    <div class="add-param-row">
-      <input class="add-param-input" id="newparam_${s.id}" placeholder="Añadir params (ej: Zn, Fe)"
-        onkeydown="if(event.key==='Enter')addParamInline('${orderId}','${s.id}')"/>
-      <button class="btn-add-param" onclick="addParamInline('${orderId}','${s.id}')">+</button>
-    </div>`;
+// ════════════════════════════════════════
+//  MULTI BODY — edit + sub-list
+// ════════════════════════════════════════
+function renderMultiBody(o) {
+  const n     = o.subsamples.length;
+  const doneN = o.subsamples.filter(s=>s.status==='Completado').length;
+  return `
+  <div class="edit-section">
+    <div class="edit-section-title">✎ Editar OS</div>
+    <div class="edit-grid">
+      <div>
+        <div class="edit-label">Código</div>
+        <input class="edit-field" id="ec_${o.id}" value="${escHtml(o.code)}"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();saveOrderEdit('${o.id}');}">
+      </div>
+      <div>
+        <div class="edit-label">Cliente</div>
+        <input class="edit-field" id="ecl_${o.id}" value="${escHtml(o.client||'')}" placeholder="Cliente"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();saveOrderEdit('${o.id}');}">
+      </div>
+    </div>
+    <button class="btn-save-edit" onclick="saveOrderEdit('${o.id}')">Guardar</button>
+  </div>
+  <div class="sub-list-title">Muestras internas (${doneN}/${n} completadas)</div>
+  ${o.subsamples.map(s=>renderSubCard(o.id,s)).join('')}
+  <div class="add-sub-row">
+    <span>Añadir submuestra (hereda parámetros de la primera)</span>
+    <button class="btn-add-sub" onclick="addSubsample('${o.id}')">+ Submuestra</button>
+  </div>`;
+}
 
-  const noteHtml=`<textarea class="note-input" id="note_${s.id}" placeholder="Notas..." onblur="saveNote('${orderId}','${s.id}')">${s.note||''}</textarea>`;
+// ════════════════════════════════════════
+//  SUB-CARD (inside multi body)
+// ════════════════════════════════════════
+function renderSubCard(orderId, s) {
+  const isExp    = expandedSub===s.id;
+  const chipsHtml= s.params.map(p=>
+    `<span class="chip ${p.done?'done':s.status==='En proceso'?'wip':''}">${p.name}${p.done?' ✓':''}</span>`
+  ).join('') || `<span style="font-size:10px;color:var(--muted)">sin params</span>`;
 
   return `
-  <div class="sub-card ${isExp?'sub-expanded':''}">
+  <div class="sub-card ${isExp?'sub-exp':''}">
     <div class="sub-header" onclick="toggleSub('${s.id}')">
       <span class="sub-code">${s.code}</span>
       <div class="sub-chips">${chipsHtml}</div>
@@ -762,7 +906,7 @@ function renderSub(orderId, s){
       </div>
     </div>
     <div class="sub-body ${isExp?'open':''}">
-      ${paramsListHtml}
+      ${renderParamBlock(orderId, s)}
       <div class="body-actions">
         <select class="body-select" onchange="changeSubStatus('${orderId}','${s.id}',this.value)">
           <option ${s.status==='Pendiente'?'selected':''}>Pendiente</option>
@@ -771,13 +915,60 @@ function renderSub(orderId, s){
         </select>
         <button class="btn-note" onclick="toggleNote('${s.id}')">📝 Notas</button>
       </div>
-      <div id="notearea_${s.id}" style="display:none">${noteHtml}</div>
+      <div id="nw_${s.id}" style="display:none" class="note-wrap">
+        <textarea id="nt_${s.id}" placeholder="Notas..." onblur="saveNote('${orderId}','${s.id}')">${escHtml(s.note||'')}</textarea>
+      </div>
     </div>
   </div>`;
 }
 
-// Enter en código
-document.getElementById('fCode').addEventListener('keydown',e=>{ if(e.key==='Enter') addOrder(); });
+// ════════════════════════════════════════
+//  PARAM BLOCK — shared between single & sub-card
+//  FIX #5: auto-completed params show accent ring + tooltip
+// ════════════════════════════════════════
+function renderParamBlock(orderId, s) {
+  const done = s.params.filter(p=>p.done).length;
+  const rows  = s.params.map((p,i) => {
+    const btnCls = p.done ? (p.auto?'param-check-btn auto':'param-check-btn done') : 'param-check-btn';
+    const stCol  = p.done ? 'var(--green)' : s.status==='En proceso' ? 'var(--yellow)' : 'var(--muted)';
+    const stTxt  = p.done ? (p.auto?'✓ Auto':'✓ Listo') : s.status==='En proceso' ? 'En proceso' : 'Pendiente';
+    const title  = p.auto ? 'Completado desde Análisis — clic para revertir' : '';
+    return `
+    <div class="param-row">
+      <button class="${btnCls}" onclick="toggleParam('${orderId}','${s.id}',${i})" title="${title}">${p.done?'✓':''}</button>
+      <span class="param-name">${escHtml(p.name)}</span>
+      <span class="param-st" style="color:${stCol}">${stTxt}</span>
+      <button class="param-del" onclick="deleteParam('${orderId}','${s.id}',${i})">✕</button>
+    </div>`;
+  }).join('');
+
+  // FIX #3: input uses unique id ap_{subId}, NOT re-created with onchange
+  return `
+  <div class="param-list-title">Parámetros <span style="color:var(--muted);font-weight:400">(${done}/${s.params.length})</span></div>
+  ${rows}
+  <div class="add-param-row">
+    <input id="ap_${s.id}" placeholder="Añadir (ej: Zn, Fe)"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();addParamInline('${orderId}','${s.id}');}">
+    <button class="btn-add-param" onclick="addParamInline('${orderId}','${s.id}')">+ Añadir</button>
+  </div>`;
+}
+
+// ════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// FIX #3: Prevent Enter on form fields (except fCode) from triggering any submit
+['fParams','fClient','fN'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key==='Enter') e.preventDefault();
+  });
+});
+document.getElementById('fCode').addEventListener('keydown', e => {
+  if (e.key==='Enter') { e.preventDefault(); addOrder(); }
+});
 
 init();
 </script>
