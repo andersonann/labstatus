@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LabStatus Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c14;
+  --surface: #0d1421;
+  --surface2: #111827;
+  --border: #1e2d45;
+  --accent: #00d4ff;
+  --accent2: #0088aa;
+  --green: #00e676;
+  --yellow: #ffb300;
+  --red: #ff4444;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(0,212,255,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(0,136,170,0.04) 0%, transparent 60%);
+}
+
+/* ─── HEADER ─── */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(13,20,33,0.9);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.header-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+.header-stats span b {
+  color: var(--text);
+  font-weight: 700;
+}
+.sync-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+  margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+.sync-dot.syncing { background: var(--yellow); }
+.sync-dot.error { background: var(--red); animation: none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ─── LAYOUT ─── */
+.container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+/* ─── ADD FORM ─── */
+.add-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.add-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.add-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+.input-wrap { position: relative; }
+.input-label {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+input, select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+input:focus, select:focus { border-color: var(--accent); }
+input::placeholder { color: var(--muted); font-size: 13px; }
+select option { background: var(--surface2); }
+
+.btn-add {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all .15s;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+.btn-add:hover { background: #00aacc; transform: translateY(-1px); }
+.btn-add:active { transform: translateY(0); }
+
+/* ─── PROGRESS BAR ─── */
+.progress-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  border-radius: 6px;
+  transition: width .5s ease;
+  width: 0%;
+}
+.progress-pct {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  min-width: 36px;
+  text-align: right;
+}
+.progress-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+/* ─── TOOLBAR ─── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  flex: 1;
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: all .15s;
+}
+.btn-ghost:hover { border-color: var(--red); color: var(--red); }
+.btn-ghost.active-sel { border-color: var(--accent); color: var(--accent); }
+.badge-count {
+  background: var(--border);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ─── SAMPLE CARD ─── */
+.sample-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color .2s;
+  cursor: pointer;
+}
+.sample-card:hover { border-color: #2a3f5f; }
+.sample-card.selected { border-color: var(--accent); background: rgba(0,212,255,0.03); }
+.sample-card.expanded { border-color: #2a3f5f; }
+
+.sample-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+}
+.sample-check {
+  width: 18px; height: 18px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  font-size: 11px;
+}
+.sample-check.checked { background: var(--accent); border-color: var(--accent); color: #000; }
+
+.sample-main { flex: 1; min-width: 0; }
+.sample-code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 700;
+}
+.sample-client {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.param-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: var(--surface2);
+  transition: all .2s;
+}
+.chip.done { border-color: var(--green); color: var(--green); background: rgba(0,230,118,0.08); }
+.chip.in-progress { border-color: var(--yellow); color: var(--yellow); background: rgba(255,179,0,0.08); }
+
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.pill-pending { background: rgba(255,68,68,0.1); color: var(--red); border: 1px solid rgba(255,68,68,0.2); }
+.pill-process { background: rgba(255,179,0,0.1); color: var(--yellow); border: 1px solid rgba(255,179,0,0.2); }
+.pill-done { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.2); }
+
+.sample-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.btn-icon {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .15s;
+}
+.btn-icon:hover { border-color: var(--red); color: var(--red); }
+.btn-icon.edit:hover { border-color: var(--accent); color: var(--accent); }
+.expand-arrow {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform .2s;
+  user-select: none;
+}
+.expanded .expand-arrow { transform: rotate(90deg); }
+
+/* ─── EXPANDED PANEL ─── */
+.sample-body {
+  border-top: 1px solid var(--border);
+  padding: 16px;
+  display: none;
+  background: rgba(0,0,0,0.15);
+}
+.sample-body.open { display: block; }
+
+.param-list-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.param-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  transition: background .15s;
+}
+.param-row:hover { background: #151f30; }
+.param-check-btn {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  transition: all .15s;
+}
+.param-check-btn.done { border-color: var(--green); background: var(--green); color: #000; }
+.param-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  flex: 1;
+}
+.param-status-txt {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.body-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.body-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  outline: none;
+}
+.body-select:focus { border-color: var(--accent); }
+.btn-save {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-save:hover { background: #00aacc; }
+.btn-note {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: all .15s;
+}
+.btn-note:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── HISTORY SECTION ─── */
+.history-section { margin-top: 24px; }
+
+/* ─── BULK DELETE BAR ─── */
+.bulk-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 200;
+  box-shadow: 0 8px 32px rgba(0,212,255,0.15);
+  animation: slideUp .2s ease;
+  display: none;
+}
+.bulk-bar.visible { display: flex; }
+@keyframes slideUp { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+.bulk-count { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.btn-bulk-del {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: background .15s;
+}
+.btn-bulk-del:hover { background: #cc2222; }
+.btn-bulk-cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 360px;
+  width: 90%;
+  animation: fadeScale .15s ease;
+}
+@keyframes fadeScale { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+.modal h3 { font-family: var(--font-mono); font-size: 14px; color: var(--red); margin-bottom: 8px; }
+.modal p { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-confirm-del { background: var(--red); color: #fff; border: none; border-radius: 6px; padding: 8px 16px; font-family: var(--font-mono); font-size: 12px; cursor: pointer; }
+.btn-cancel-modal { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 8px 16px; font-size: 12px; cursor: pointer; font-family: var(--font-mono); }
+
+/* ─── EMPTY STATE ─── */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+.empty-icon { font-size: 32px; margin-bottom: 10px; opacity: .4; }
+
+/* ─── LOADING SKELETON ─── */
+.skeleton {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+.skel-line { height: 12px; background: var(--border); border-radius: 4px; margin-bottom: 8px; }
+.skel-line.short { width: 40%; }
+
+/* ─── NOTE INPUT ─── */
+.note-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  margin-top: 8px;
+}
+.note-input:focus { border-color: var(--accent); }
+
+/* ─── INLINE EDIT ─── */
+.edit-field {
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+}
+.edit-field:focus { border-color: var(--accent); }
+.edit-hint { font-size: 10px; color: var(--muted); margin-top: 3px; font-family: var(--font-mono); }
+
+/* ─── ADD PARAM ROW ─── */
+.add-param-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+.add-param-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 7px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+}
+.add-param-input:focus { border-color: var(--accent); }
+.add-param-input::placeholder { color: var(--muted); }
+.btn-add-param {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-add-param:hover { background: #00aacc; }
+
+.param-del-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color .15s;
+}
+.param-del-btn:hover { color: var(--red); }
+
+/* ─── EDIT SECTION ─── */
+.edit-section {
+  background: rgba(0,212,255,0.03);
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.edit-section-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.edit-label {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  margin-bottom: 3px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.btn-save-edit {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.btn-save-edit:hover { background: #00aacc; }
+
+@media(max-width:600px){
+  .form-row { grid-template-columns: 1fr; }
+  .form-row-2 { grid-template-columns: 1fr; }
+  .btn-add { width: 100%; }
+  .header-stats { display: none; }
+  .param-chips { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">◈ LabStatus</div>
+  <div class="header-stats">
+    <span><b id="hTotal">0</b> muestras</span>
+    <span><b id="hActive">0</b> activas</span>
+    <span><b id="hDone">0</b> completadas</span>
+    <span><span class="sync-dot" id="syncDot"></span><span id="syncTxt" style="font-size:10px">sincronizado</span></span>
+  </div>
+</header>
+
+<!-- MODAL CONFIRM DELETE -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>⚠ Confirmar eliminación</h3>
+    <p id="modalMsg">¿Eliminar esta muestra? Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm-del" id="modalConfirmBtn">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- BULK DELETE BAR -->
+<div class="bulk-bar" id="bulkBar">
+  <span class="bulk-count" id="bulkCount">0 seleccionadas</span>
+  <button class="btn-bulk-del" onclick="bulkDelete()">🗑 Eliminar seleccionadas</button>
+  <button class="btn-bulk-cancel" onclick="clearSelection()">Cancelar</button>
+</div>
+
+<div class="container">
+
+  <!-- ADD FORM -->
+  <div class="add-card">
+    <div class="add-title">+ Nueva muestra</div>
+    <div class="form-row">
+      <div class="input-wrap">
+        <div class="input-label">Código *</div>
+        <input id="fCode" placeholder="ej. MU-2024-001" />
+      </div>
+      <div class="input-wrap">
+        <div class="input-label">Parámetros (separados por coma)</div>
+        <input id="fParams" placeholder="ej. Au, Ag, Cu, Pb" />
+      </div>
+      <div class="input-wrap">
+        <div class="input-label">Cliente</div>
+        <input id="fClient" placeholder="Nombre del cliente" />
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div class="input-wrap">
+        <div class="input-label">Estado inicial</div>
+        <select id="fStatus">
+          <option value="Pendiente">Pendiente</option>
+          <option value="En proceso">En proceso</option>
+        </select>
+      </div>
+      <button class="btn-add" onclick="addSample()">+ Agregar</button>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-card">
+    <span class="progress-label">PROGRESO GLOBAL</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+
+  <!-- ACTIVE LIST -->
+  <div class="toolbar">
+    <span class="section-title">Activas <span class="badge-count" id="countActive">0</span></span>
+    <button class="btn-ghost" id="btnSelect" onclick="toggleSelectionMode()">☐ Seleccionar</button>
+  </div>
+  <div id="activeList"></div>
+
+  <!-- HISTORY -->
+  <div class="history-section">
+    <div class="toolbar">
+      <span class="section-title">Historial completadas <span class="badge-count" id="countHistory">0</span></span>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG — reemplaza con tus datos de JSONBin
+// ══════════════════════════════════════════════
+const BIN_URL = "https://api.jsonbin.io/v3/b/69ef96e636566621a8fa0813";
+const BIN_KEY = "$2a$10$y5s3F5YdWIB9axb55/V4TuK6E/1Z5Sod/pyqxbn5H/aBLjoTAYapS";
+const CACHE_KEY = "labstatus_v3";
+const SYNC_INTERVAL = 30000; // sync cada 30s en background
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let samples = [];
+let expandedId = null;
+let selectionMode = false;
+let selectedIds = new Set();
+let pendingDelete = null;
+let editingNoteId = null;
+
+// ══════════════════════════════════════════════
+//  INIT — carga local primero, luego remoto
+// ══════════════════════════════════════════════
+function init() {
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (cached) {
+    try {
+      samples = JSON.parse(cached);
+      render(); // render instantáneo desde cache
+    } catch(e) { samples = []; showSkeletons(); }
+  } else {
+    showSkeletons();
+  }
+  loadRemote(); // sync background
+  setInterval(loadRemote, SYNC_INTERVAL);
+}
+
+function showSkeletons() {
+  document.getElementById('activeList').innerHTML = `
+    <div class="skeleton"><div class="skel-line" style="width:30%"></div><div class="skel-line short"></div></div>
+    <div class="skeleton"><div class="skel-line" style="width:45%"></div><div class="skel-line short"></div></div>
+  `;
+}
+
+function setSyncStatus(status) {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncTxt');
+  dot.className = 'sync-dot' + (status === 'syncing' ? ' syncing' : status === 'error' ? ' error' : '');
+  txt.textContent = status === 'syncing' ? 'sincronizando...' : status === 'error' ? 'sin conexión' : 'sincronizado';
+}
+
+async function loadRemote() {
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(BIN_URL + '/latest', {
+      headers: { 'X-Master-Key': BIN_KEY }
+    });
+    if (!res.ok) throw new Error('fetch error');
+    const data = await res.json();
+    const remote = data.record?.samples || [];
+    samples = remote;
+    sortSamples();
+    localStorage.setItem(CACHE_KEY, JSON.stringify(samples));
+    render();
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('error');
+  }
+}
+
+async function saveRemote() {
+  setSyncStatus('syncing');
+  localStorage.setItem(CACHE_KEY, JSON.stringify(samples));
+  try {
+    await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': BIN_KEY
+      },
+      body: JSON.stringify({ samples })
+    });
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('error');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  ADD SAMPLE
+// ══════════════════════════════════════════════
+function addSample() {
+  const code = document.getElementById('fCode').value.trim();
+  if (!code) { document.getElementById('fCode').focus(); shake('fCode'); return; }
+  const paramsRaw = document.getElementById('fParams').value.trim();
+  const client = document.getElementById('fClient').value.trim();
+  const status = document.getElementById('fStatus').value;
+
+  const params = paramsRaw
+    ? paramsRaw.split(',').map(p => p.trim()).filter(Boolean).map(name => ({ name, done: false }))
+    : [];
+
+  const sample = {
+    id: Date.now().toString(),
+    code,
+    client,
+    status,
+    params,
+    note: '',
+    createdAt: new Date().toISOString()
+  };
+
+  samples.push(sample);
+  sortSamples();
+  document.getElementById('fCode').value = '';
+  document.getElementById('fParams').value = '';
+  document.getElementById('fClient').value = '';
+  render();
+  saveRemote();
+}
+
+function sortSamples() {
+  samples.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' }));
+}
+
+function shake(id) {
+  const el = document.getElementById(id);
+  el.style.borderColor = 'var(--red)';
+  setTimeout(() => { el.style.borderColor = ''; }, 800);
+}
+
+// ══════════════════════════════════════════════
+//  INLINE EDIT — código y cliente
+// ══════════════════════════════════════════════
+function saveInlineEdit(id) {
+  const s = samples.find(x => x.id === id);
+  if (!s) return;
+  const codeEl = document.getElementById('edit_code_' + id);
+  const clientEl = document.getElementById('edit_client_' + id);
+  if (codeEl && codeEl.value.trim()) s.code = codeEl.value.trim();
+  if (clientEl) s.client = clientEl.value.trim();
+  sortSamples();
+  expandedId = id; // mantener abierto tras reordenar
+  render();
+  saveRemote();
+}
+
+// ══════════════════════════════════════════════
+//  ADD PARAM inside detail
+// ══════════════════════════════════════════════
+function addParamInline(id) {
+  const el = document.getElementById('newparam_' + id);
+  if (!el) return;
+  const names = el.value.split(',').map(p => p.trim()).filter(Boolean);
+  if (!names.length) return;
+  const s = samples.find(x => x.id === id);
+  if (!s) return;
+  names.forEach(name => s.params.push({ name, done: false }));
+  el.value = '';
+  expandedId = id;
+  render();
+  saveRemote();
+}
+
+function deleteParam(sampleId, paramIdx) {
+  const s = samples.find(x => x.id === sampleId);
+  if (!s) return;
+  s.params.splice(paramIdx, 1);
+  // recalc status
+  if (s.params.length > 0 && s.params.every(p => p.done)) s.status = 'Completado';
+  else if (s.params.some(p => !p.done) && s.status === 'Completado') s.status = 'En proceso';
+  expandedId = sampleId;
+  render();
+  saveRemote();
+}
+
+// ══════════════════════════════════════════════
+//  DELETE
+// ══════════════════════════════════════════════
+function confirmDelete(id) {
+  pendingDelete = { type: 'single', id };
+  const s = samples.find(x => x.id === id);
+  document.getElementById('modalMsg').textContent =
+    `¿Eliminar muestra "${s.code}"? Esta acción no se puede deshacer.`;
+  document.getElementById('modalConfirmBtn').onclick = executeDelete;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function executeDelete() {
+  if (!pendingDelete) return;
+  if (pendingDelete.type === 'single') {
+    samples = samples.filter(s => s.id !== pendingDelete.id);
+  } else {
+    samples = samples.filter(s => !selectedIds.has(s.id));
+    clearSelection();
+  }
+  closeModal();
+  render();
+  saveRemote();
+}
+
+function bulkDelete() {
+  pendingDelete = { type: 'bulk' };
+  document.getElementById('modalMsg').textContent =
+    `¿Eliminar ${selectedIds.size} muestra(s) seleccionada(s)? Esta acción no se puede deshacer.`;
+  document.getElementById('modalConfirmBtn').onclick = executeDelete;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  pendingDelete = null;
+}
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ══════════════════════════════════════════════
+//  SELECTION MODE
+// ══════════════════════════════════════════════
+function toggleSelectionMode() {
+  selectionMode = !selectionMode;
+  if (!selectionMode) clearSelection();
+  document.getElementById('btnSelect').classList.toggle('active-sel', selectionMode);
+  document.getElementById('btnSelect').textContent = selectionMode ? '✕ Cancelar' : '☐ Seleccionar';
+  render();
+}
+
+function toggleSelect(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  updateBulkBar();
+  render();
+}
+
+function clearSelection() {
+  selectedIds.clear();
+  selectionMode = false;
+  document.getElementById('btnSelect').textContent = '☐ Seleccionar';
+  document.getElementById('btnSelect').classList.remove('active-sel');
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  if (selectedIds.size > 0) {
+    bar.classList.add('visible');
+    document.getElementById('bulkCount').textContent = `${selectedIds.size} seleccionada(s)`;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  STATUS CHANGE
+// ══════════════════════════════════════════════
+function changeStatus(id, val) {
+  const s = samples.find(x => x.id === id);
+  if (!s) return;
+  s.status = val;
+  if (val === 'Completado' && s.params.length > 0) {
+    s.params.forEach(p => p.done = true);
+  }
+  render();
+  saveRemote();
+}
+
+// ══════════════════════════════════════════════
+//  PARAM TOGGLE
+// ══════════════════════════════════════════════
+function toggleParam(sampleId, paramIdx) {
+  const s = samples.find(x => x.id === sampleId);
+  if (!s) return;
+  s.params[paramIdx].done = !s.params[paramIdx].done;
+  // Auto-complete si todos los params están done
+  if (s.params.length > 0 && s.params.every(p => p.done) && s.status !== 'Completado') {
+    s.status = 'Completado';
+  } else if (s.params.some(p => !p.done) && s.status === 'Completado') {
+    s.status = 'En proceso';
+  }
+  render();
+  expandedId = sampleId; // mantener abierto
+  saveRemote();
+}
+
+// ══════════════════════════════════════════════
+//  NOTE SAVE
+// ══════════════════════════════════════════════
+function saveNote(id) {
+  const el = document.getElementById('note_' + id);
+  if (!el) return;
+  const s = samples.find(x => x.id === id);
+  if (!s) return;
+  s.note = el.value;
+  saveRemote();
+}
+
+// ══════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════
+function render() {
+  const active = samples.filter(s => s.status !== 'Completado');
+  const history = samples.filter(s => s.status === 'Completado');
+  const done = history.length;
+  const pct = samples.length ? Math.round(done / samples.length * 100) : 0;
+
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('hTotal').textContent = samples.length;
+  document.getElementById('hActive').textContent = active.length;
+  document.getElementById('hDone').textContent = done;
+  document.getElementById('countActive').textContent = active.length;
+  document.getElementById('countHistory').textContent = history.length;
+
+  document.getElementById('activeList').innerHTML = active.length
+    ? active.map(s => renderCard(s)).join('')
+    : `<div class="empty"><div class="empty-icon">◈</div>No hay muestras activas</div>`;
+
+  document.getElementById('historyList').innerHTML = history.length
+    ? history.map(s => renderCard(s)).join('')
+    : `<div class="empty" style="padding:20px"><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">Sin historial</div></div>`;
+}
+
+function renderCard(s) {
+  const isExpanded = expandedId === s.id;
+  const isSelected = selectedIds.has(s.id);
+  const pillClass = s.status === 'Pendiente' ? 'pill-pending' : s.status === 'En proceso' ? 'pill-process' : 'pill-done';
+
+  const paramsHtml = s.params.length
+    ? s.params.map(p => `<span class="chip ${p.done ? 'done' : s.status === 'En proceso' ? 'in-progress' : ''}">${p.name}${p.done ? ' ✓' : ''}</span>`).join('')
+    : `<span style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">sin parámetros</span>`;
+
+  const checkHtml = selectionMode
+    ? `<div class="sample-check ${isSelected ? 'checked' : ''}" onclick="event.stopPropagation();toggleSelect('${s.id}')">${isSelected ? '✓' : ''}</div>`
+    : '';
+
+  const paramListHtml = `
+    <div class="param-list-title">Parámetros <span style="color:var(--muted);font-weight:400">(${s.params.filter(p=>p.done).length}/${s.params.length} completados)</span></div>
+    ${s.params.map((p, i) => `
+      <div class="param-row">
+        <button class="param-check-btn ${p.done ? 'done' : ''}" onclick="toggleParam('${s.id}',${i})">${p.done ? '✓' : ''}</button>
+        <span class="param-name">${p.name}</span>
+        <span class="param-status-txt" style="color:${p.done ? 'var(--green)' : s.status==='En proceso' ? 'var(--yellow)' : 'var(--muted)'}">${p.done ? '✓ Finalizado' : s.status === 'En proceso' ? 'En proceso' : 'Pendiente'}</span>
+        <button class="param-del-btn" title="Eliminar parámetro" onclick="deleteParam('${s.id}',${i})">✕</button>
+      </div>
+    `).join('')}
+    <div class="add-param-row">
+      <input class="add-param-input" id="newparam_${s.id}" placeholder="Añadir parámetros (ej: Zn, Fe)" 
+        onkeydown="if(event.key==='Enter')addParamInline('${s.id}')"/>
+      <button class="btn-add-param" onclick="addParamInline('${s.id}')">+ Añadir</button>
+    </div>
+  `;
+
+  const editSectionHtml = `
+    <div class="edit-section">
+      <div class="edit-section-title">✎ Editar muestra</div>
+      <div class="edit-grid">
+        <div>
+          <div class="edit-label">Código</div>
+          <input class="edit-field" id="edit_code_${s.id}" value="${s.code}" 
+            onkeydown="if(event.key==='Enter')saveInlineEdit('${s.id}')"/>
+        </div>
+        <div>
+          <div class="edit-label">Cliente</div>
+          <input class="edit-field" id="edit_client_${s.id}" value="${s.client||''}" placeholder="Nombre del cliente"
+            onkeydown="if(event.key==='Enter')saveInlineEdit('${s.id}')"/>
+        </div>
+      </div>
+      <button class="btn-save-edit" onclick="saveInlineEdit('${s.id}')">Guardar cambios</button>
+    </div>
+  `;
+
+  const noteHtml = `
+    <textarea class="note-input" id="note_${s.id}" placeholder="Notas internas..." onblur="saveNote('${s.id}')">${s.note || ''}</textarea>
+  `;
+
+  return `
+  <div class="sample-card ${isExpanded ? 'expanded' : ''} ${isSelected ? 'selected' : ''}" id="card_${s.id}">
+    <div class="sample-header" onclick="toggleExpand('${s.id}')">
+      ${checkHtml}
+      <div class="sample-main">
+        <div class="sample-code">${s.code}</div>
+        ${s.client ? `<div class="sample-client">${s.client}</div>` : ''}
+      </div>
+      <div class="param-chips">${paramsHtml}</div>
+      <div class="sample-actions" onclick="event.stopPropagation()">
+        <span class="status-pill ${pillClass}">${s.status}</span>
+        <button class="btn-icon" title="Eliminar" onclick="confirmDelete('${s.id}')">✕</button>
+        <span class="expand-arrow">▶</span>
+      </div>
+    </div>
+    <div class="sample-body ${isExpanded ? 'open' : ''}">
+      ${editSectionHtml}
+      ${paramListHtml}
+      <div class="body-actions" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <select class="body-select" onchange="changeStatus('${s.id}',this.value)">
+          <option ${s.status==='Pendiente'?'selected':''}>Pendiente</option>
+          <option ${s.status==='En proceso'?'selected':''}>En proceso</option>
+          <option ${s.status==='Completado'?'selected':''}>Completado</option>
+        </select>
+        <button class="btn-note" onclick="toggleNote('${s.id}')">📝 Notas</button>
+      </div>
+      <div id="notearea_${s.id}" style="display:none">${noteHtml}</div>
+    </div>
+  </div>`;
+}
+
+function toggleExpand(id) {
+  if (selectionMode) { toggleSelect(id); return; }
+  expandedId = expandedId === id ? null : id;
+  render();
+}
+
+function toggleNote(id) {
+  const el = document.getElementById('notearea_' + id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+// Enter en input de código
+document.getElementById('fCode').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addSample();
+});
+
+// ══════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>

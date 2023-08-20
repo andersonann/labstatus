@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis — LabStatus Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c14;--surface:#0d1421;--surface2:#111827;--border:#1e2d45;
+  --accent:#00d4ff;--green:#00e676;--yellow:#ffb300;--red:#ff4444;
+  --text:#e2e8f0;--muted:#64748b;
+  --font-mono:'Space Mono',monospace;--font-body:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;
+  background-image:radial-gradient(ellipse at 80% 0%,rgba(255,179,0,.04) 0%,transparent 60%);}
+
+/* HEADER */
+header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;
+  justify-content:space-between;background:rgba(13,20,33,.92);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--font-mono);font-size:13px;color:var(--accent);letter-spacing:3px;}
+.header-nav{display:flex;gap:8px;}
+.nav-btn{background:transparent;border:1px solid var(--border);color:var(--muted);
+  border-radius:6px;padding:6px 14px;font-family:var(--font-mono);font-size:11px;
+  cursor:pointer;letter-spacing:1px;transition:all .15s;text-decoration:none;display:inline-block;}
+.nav-btn:hover,.nav-btn.active{border-color:var(--accent);color:var(--accent);}
+
+.container{max-width:1000px;margin:0 auto;padding:24px 14px;}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.page-title{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;}
+.btn-primary{background:var(--accent);color:#000;border:none;border-radius:7px;
+  padding:8px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;transition:background .15s;}
+.btn-primary:hover{background:#00aacc;}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);
+  border-radius:7px;padding:8px 16px;font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .15s;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* STATUS BAR */
+.status-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.status-item{display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--font-mono);}
+.status-dot{width:8px;height:8px;border-radius:50%;}
+.dot-ok{background:var(--green);}
+.dot-warn{background:var(--yellow);}
+.dot-error{background:var(--red);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:.3;}
+.empty-title{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;}
+.empty-sub{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* PARAM TABLE CARD */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  margin-bottom:20px;overflow:hidden;position:relative;}
+.table-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--yellow),transparent);}
+.table-card-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);}
+.param-title{font-family:var(--font-mono);font-size:14px;color:var(--yellow);font-weight:700;letter-spacing:1px;}
+.param-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);}
+.table-status{font-size:11px;font-family:var(--font-mono);padding:3px 8px;border-radius:4px;}
+.ts-ok{color:var(--green);background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);}
+.ts-warn{color:var(--yellow);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);}
+.ts-error{color:var(--red);background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);}
+
+/* DATA TABLE */
+.data-table-wrap{overflow-x:auto;padding:0 18px 16px;}
+table{width:100%;border-collapse:collapse;margin-top:14px;}
+thead th{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px;
+  text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);text-transform:uppercase;}
+tbody tr{border-bottom:1px solid rgba(30,45,69,.5);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(0,212,255,.02);}
+.cell-code{font-family:var(--font-mono);font-size:12px;color:var(--accent);padding:10px;
+  font-weight:700;white-space:nowrap;}
+.cell-input{padding:6px;}
+.cell-input input{width:100%;min-width:90px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);padding:7px 9px;font-family:var(--font-mono);font-size:12px;
+  outline:none;transition:border-color .2s;}
+.cell-input input:focus{border-color:var(--accent);}
+.cell-input input.required-empty{border-color:var(--red)!important;background:rgba(255,68,68,.05);}
+.cell-input input.filled{border-color:rgba(0,230,118,.4);}
+.cell-input input::placeholder{color:var(--muted);font-size:11px;}
+.cell-status{padding:6px 10px;font-size:11px;font-family:var(--font-mono);}
+.row-ok{color:var(--green);}
+.row-warn{color:var(--yellow);}
+.row-empty{color:var(--muted);}
+
+/* MR NOTE */
+.mr-note{font-size:10px;color:var(--muted);font-family:var(--font-mono);
+  padding:6px 18px 12px;border-top:1px dashed var(--border);margin-top:2px;}
+
+/* EXTRA COLS */
+.btn-add-col{background:transparent;border:1px dashed var(--border);color:var(--muted);
+  border-radius:5px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:var(--font-mono);
+  transition:all .15s;white-space:nowrap;}
+.btn-add-col:hover{border-color:var(--accent);color:var(--accent);}
+
+/* RESULTS SUMMARY */
+.results-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:18px;margin-bottom:20px;}
+.results-title{font-family:var(--font-mono);font-size:10px;color:var(--accent);
+  letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.result-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:10px;text-align:center;}
+.result-num{font-family:var(--font-mono);font-size:20px;font-weight:700;}
+.result-num.green{color:var(--green);}
+.result-num.yellow{color:var(--yellow);}
+.result-num.red{color:var(--red);}
+.result-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;}
+
+/* PRINT */
+@media print{
+  header,.btn-row,.top-bar button,.btn-add-col{display:none!important;}
+  body{background:#fff;color:#000;}
+  .table-card{border:1px solid #ccc;}
+  .data-table-wrap table{color:#000;}
+  .cell-input input{border:1px solid #999;color:#000;background:#fff;}
+}
+@media(max-width:600px){
+  .result-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">◈ LABSTATUS</div>
+  <div class="header-nav">
+    <a class="nav-btn" href="index.html">← Muestras</a>
+    <span class="nav-btn active">⚗ Análisis</span>
+  </div>
+</header>
+
+<div class="container">
+  <div class="top-bar">
+    <span class="page-title">⚗ Hoja de Análisis</span>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="clearAll()">✕ Limpiar</button>
+      <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+      <button class="btn-primary" onclick="validateAll()">✓ Validar todo</button>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-item"><div class="status-dot dot-ok"></div><span id="stTotal">0 muestras cargadas</span></div>
+    <div class="status-item"><div class="status-dot dot-warn"></div><span id="stMissing">0 lecturas faltantes</span></div>
+    <div class="status-item"><div class="status-dot dot-error"></div><span id="stMR">MR: revisando...</span></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="results-card" id="summaryCard" style="display:none">
+    <div class="results-title">Resumen de validación</div>
+    <div class="result-grid" id="summaryGrid"></div>
+  </div>
+
+  <!-- TABLES CONTAINER -->
+  <div id="tablesContainer"></div>
+
+  <!-- EMPTY -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">⚗</div>
+    <div class="empty-title">Sin muestras seleccionadas</div>
+    <div class="empty-sub">Ve a la página principal, selecciona las órdenes de servicio<br>que quieres analizar y haz clic en <b>⚗ Analizar</b>.</div>
+  </div>
+</div>
+
+<script>
+// ── LOAD PAYLOAD ────────────────────────────────
+// payload: [{orderCode, client, subCode, subId, params:[]}]
+let payload = [];
+let tableData = {}; // {param: [{subCode, lectura, mr, extraCols:{}}]}
+let extraColsByParam = {}; // {param: ['Dilución', ...]}
+
+function init() {
+  const raw = sessionStorage.getItem('analyze_payload');
+  if (!raw) { showEmpty(); return; }
+  try {
+    payload = JSON.parse(raw);
+    if (!payload.length) { showEmpty(); return; }
+    buildTables();
+  } catch(e) { showEmpty(); }
+}
+
+function showEmpty() {
+  document.getElementById('emptyState').style.display = 'block';
+  document.getElementById('tablesContainer').style.display = 'none';
+  document.getElementById('summaryCard').style.display = 'none';
+}
+
+function buildTables() {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('tablesContainer').style.display = 'block';
+
+  // Group samples by param
+  const paramMap = {}; // {paramName: [{subCode}]}
+  payload.forEach(s => {
+    s.params.forEach(p => {
+      if (!paramMap[p]) paramMap[p] = [];
+      // avoid duplicates
+      if (!paramMap[p].find(x => x.subCode === s.subCode)) {
+        paramMap[p].push({ subCode: s.subCode, client: s.client, orderCode: s.orderCode });
+      }
+    });
+  });
+
+  // Init tableData
+  tableData = {};
+  extraColsByParam = {};
+  Object.entries(paramMap).forEach(([param, subs]) => {
+    tableData[param] = subs.map(s => ({ subCode: s.subCode, lectura: '', mr: '' }));
+    extraColsByParam[param] = [];
+  });
+
+  renderTables();
+  updateStatusBar();
+}
+
+function renderTables() {
+  const container = document.getElementById('tablesContainer');
+  const params = Object.keys(tableData);
+  if (!params.length) { showEmpty(); return; }
+
+  container.innerHTML = params.map(param => renderParamTable(param)).join('');
+}
+
+function renderParamTable(param) {
+  const rows = tableData[param];
+  const extraCols = extraColsByParam[param] || [];
+  const hasMR = rows.some(r => r.mr.trim() !== '');
+  const allLectura = rows.every(r => r.lectura.trim() !== '');
+  const statusClass = allLectura && hasMR ? 'ts-ok' : !allLectura ? 'ts-error' : 'ts-warn';
+  const statusText = allLectura && hasMR ? '✓ Completo' : !allLectura ? '⚠ Falta lecturas' : '⚠ Falta MR';
+
+  const extraHeaders = extraCols.map(col =>
+    `<th>${col} <button class="btn-add-col" onclick="removeExtraCol('${param}','${col}')" style="margin-left:4px;font-size:9px;padding:1px 4px">✕</button></th>`
+  ).join('');
+
+  const rowsHtml = rows.map((r, i) => {
+    const extraInputs = extraCols.map(col =>
+      `<td class="cell-input"><input type="text" value="${r.extraCols?.[col]||''}"
+        placeholder="-"
+        oninput="setExtra('${param}',${i},'${col}',this.value)" /></td>`
+    ).join('');
+
+    const lecturaFilled = r.lectura.trim() !== '';
+    const rowStatusClass = lecturaFilled ? 'row-ok' : 'row-empty';
+    const rowStatusText = lecturaFilled ? '✓' : '—';
+
+    return `
+    <tr>
+      <td class="cell-code">${r.subCode}</td>
+      <td class="cell-input">
+        <input type="number" step="any" value="${r.lectura}"
+          placeholder="Lectura"
+          class="${lecturaFilled?'filled':''}"
+          oninput="setVal('${param}',${i},'lectura',this.value);this.className=this.value.trim()?'filled':''"
+          onchange="updateStatusBar()"/>
+      </td>
+      <td class="cell-input">
+        <input type="number" step="any" value="${r.mr}"
+          placeholder="MR (opt.)"
+          class="${r.mr.trim()?'filled':''}"
+          oninput="setVal('${param}',${i},'mr',this.value);this.className=this.value.trim()?'filled':''"
+          onchange="updateStatusBar()"/>
+      </td>
+      ${extraInputs}
+      <td class="cell-status ${rowStatusClass}">${rowStatusText}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="table-card" id="tcard_${param.replace(/\s/g,'_')}">
+    <div class="table-card-header">
+      <div>
+        <div class="param-title">${param}</div>
+        <div class="param-meta">${rows.length} muestra${rows.length>1?'s':''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn-add-col" onclick="addExtraCol('${param}')">+ Col</button>
+        <span class="table-status ${statusClass}" id="tstatus_${param.replace(/\s/g,'_')}">${statusText}</span>
+      </div>
+    </div>
+    <div class="data-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Muestra</th>
+            <th>Lectura</th>
+            <th>MR</th>
+            ${extraHeaders}
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+    <div class="mr-note">* MR = Material de Referencia. Al menos una fila por tabla debe tener MR para que la tabla se marque como completa.</div>
+  </div>`;
+}
+
+function setVal(param, idx, field, val) {
+  if (!tableData[param]) return;
+  tableData[param][idx][field] = val;
+  updateTableStatus(param);
+  updateStatusBar();
+}
+
+function setExtra(param, idx, col, val) {
+  if (!tableData[param]) return;
+  if (!tableData[param][idx].extraCols) tableData[param][idx].extraCols = {};
+  tableData[param][idx].extraCols[col] = val;
+}
+
+function addExtraCol(param) {
+  const name = prompt('Nombre de la columna extra (ej: Dilución, Abs):');
+  if (!name || !name.trim()) return;
+  const col = name.trim();
+  if (!extraColsByParam[param]) extraColsByParam[param] = [];
+  if (!extraColsByParam[param].includes(col)) {
+    extraColsByParam[param].push(col);
+    tableData[param].forEach(r => { if (!r.extraCols) r.extraCols = {}; r.extraCols[col] = ''; });
+    rerenderTable(param);
+  }
+}
+
+function removeExtraCol(param, col) {
+  if (!extraColsByParam[param]) return;
+  extraColsByParam[param] = extraColsByParam[param].filter(c => c !== col);
+  tableData[param].forEach(r => { if (r.extraCols) delete r.extraCols[col]; });
+  rerenderTable(param);
+}
+
+function rerenderTable(param) {
+  const el = document.getElementById('tcard_' + param.replace(/\s/g,'_'));
+  if (el) el.outerHTML = renderParamTable(param);
+  // re-find after DOM update
+  const container = document.getElementById('tablesContainer');
+  const params = Object.keys(tableData);
+  container.innerHTML = params.map(p => renderParamTable(p)).join('');
+  updateStatusBar();
+}
+
+function updateTableStatus(param) {
+  const rows = tableData[param] || [];
+  const hasMR = rows.some(r => r.mr.trim() !== '');
+  const allLectura = rows.every(r => r.lectura.trim() !== '');
+  const el = document.getElementById('tstatus_' + param.replace(/\s/g,'_'));
+  if (!el) return;
+  if (allLectura && hasMR) {
+    el.className = 'table-status ts-ok'; el.textContent = '✓ Completo';
+  } else if (!allLectura) {
+    el.className = 'table-status ts-error'; el.textContent = '⚠ Falta lecturas';
+  } else {
+    el.className = 'table-status ts-warn'; el.textContent = '⚠ Falta MR';
+  }
+}
+
+function updateStatusBar() {
+  const allSubs = new Set(payload.map(s => s.subCode));
+  const params = Object.keys(tableData);
+  let totalReadings = 0, filledReadings = 0, tablesWithMR = 0;
+
+  params.forEach(param => {
+    const rows = tableData[param];
+    rows.forEach(r => {
+      totalReadings++;
+      if (r.lectura.trim()) filledReadings++;
+    });
+    if (rows.some(r => r.mr.trim())) tablesWithMR++;
+  });
+
+  const missing = totalReadings - filledReadings;
+  const mrOk = tablesWithMR === params.length;
+
+  document.getElementById('stTotal').textContent = `${allSubs.size} muestras · ${params.length} parámetros`;
+  document.getElementById('stMissing').textContent = missing > 0 ? `${missing} lecturas faltantes` : '✓ Todas las lecturas ingresadas';
+  document.getElementById('stMR').textContent = mrOk ? `✓ MR presente en todas las tablas` : `⚠ ${params.length - tablesWithMR} tabla(s) sin MR`;
+}
+
+function validateAll() {
+  const params = Object.keys(tableData);
+  let totalOk = 0, totalWarn = 0, totalError = 0;
+
+  params.forEach(param => {
+    const rows = tableData[param];
+    const allLectura = rows.every(r => r.lectura.trim() !== '');
+    const hasMR = rows.some(r => r.mr.trim() !== '');
+    if (allLectura && hasMR) totalOk++;
+    else if (!allLectura) totalError++;
+    else totalWarn++;
+    updateTableStatus(param);
+    // highlight empty required cells
+    rows.forEach((r, i) => {
+      // Can't easily target inputs after render; re-render will highlight
+    });
+  });
+
+  // Re-render to apply highlighting
+  const container = document.getElementById('tablesContainer');
+  container.innerHTML = params.map(p => renderParamTable(p)).join('');
+
+  // Show summary
+  const summaryCard = document.getElementById('summaryCard');
+  summaryCard.style.display = 'block';
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="result-item"><div class="result-num green">${totalOk}</div><div class="result-label">Tablas OK</div></div>
+    <div class="result-item"><div class="result-num yellow">${totalWarn}</div><div class="result-label">Sin MR</div></div>
+    <div class="result-item"><div class="result-num red">${totalError}</div><div class="result-label">Incompletas</div></div>
+    <div class="result-item"><div class="result-num" style="color:var(--accent)">${params.length}</div><div class="result-label">Total parámetros</div></div>
+  `;
+  summaryCard.scrollIntoView({ behavior: 'smooth' });
+}
+
+function clearAll() {
+  if (!confirm('¿Limpiar todos los datos ingresados?')) return;
+  buildTables();
+  document.getElementById('summaryCard').style.display = 'none';
+}
+
+init();
+</script>
+</body>
+</html>
