@@ -436,21 +436,88 @@ function deleteParam(orderId, subId, idx) {
 // ════════════════════════════════════════
 //  EDIT & NOTE
 // ════════════════════════════════════════
-function saveOrderEdit(id) {
+async function saveOrderEdit(id) {
   if (!requireAuth()) return;
   const o = orders.find(x => x.id === id);
   if (!o) return;
   const codeEl   = document.getElementById('ec_' + id);
   const clientEl = document.getElementById('ecl_' + id);
+  const oldCode  = o.code;
   const newCode  = codeEl?.value.trim() || o.code;
-  if (newCode !== o.code) {
+  const codeChanged = newCode !== oldCode;
+
+  if (codeChanged) {
     o.code = newCode;
     o.subsamples.forEach((s, i) => s.code = newCode + '/' + pad3(i + 1));
   }
   if (clientEl) o.client = clientEl.value.trim();
   sortOrders();
   expandedOrder = id;
-  render(); saveOne(o);
+  render();
+  saveOne(o);
+
+  // Actualizar códigos en analysis_history si cambió el código
+  if (codeChanged) {
+    _updateHistoryCodes(oldCode, newCode, o.subsamples);
+  }
+}
+
+// Actualiza en Supabase los registros de analysis_history que
+// contengan el código viejo, renombrándolo al nuevo
+async function _updateHistoryCodes(oldCode, newCode, subsamples) {
+  try {
+    const { data, error } = await supaClient
+      .from('analysis_history')
+      .select('id, codes, data')
+      .ilike('codes', `%${oldCode}%`);
+
+    if (error || !data?.length) return;
+
+    // Mapa subId → nuevo subCode
+    const subMap = {};
+    subsamples.forEach(s => { subMap[s.id] = s.code; });
+
+    for (const rec of data) {
+      let parsed;
+      try { parsed = JSON.parse(rec.data); } catch(e) { continue; }
+
+      let changed = false;
+
+      // Actualizar codes (el campo resumen)
+      const newCodes = rec.codes
+        .split(',')
+        .map(c => c.trim())
+        .map(c => {
+          if (c === oldCode || c.startsWith(oldCode + '/')) {
+            changed = true;
+            return c.replace(oldCode, newCode);
+          }
+          return c;
+        })
+        .join(', ');
+
+      // Actualizar subCode dentro del JSON de tableData
+      if (parsed.tableData) {
+        Object.values(parsed.tableData).forEach(rows => {
+          rows.forEach(r => {
+            if (subMap[r.subId]) {
+              r.subCode = subMap[r.subId];
+              changed = true;
+            }
+          });
+        });
+      }
+
+      if (!changed) continue;
+
+      await supaClient
+        .from('analysis_history')
+        .update({ codes: newCodes, data: JSON.stringify(parsed) })
+        .eq('id', rec.id);
+    }
+  } catch(e) {
+    console.error('_updateHistoryCodes error:', e);
+  }
 }
 
 function saveNote(orderId, subId) {

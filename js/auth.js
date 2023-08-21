@@ -32,37 +32,28 @@ const authState = {
    En ambos casos reacciona a cambios de sesión.
 ──────────────────────────────────────── */
 async function initAuth(onReady) {
-  // Obtener sesión actual
+  // Obtener sesión actual y llamar onReady UNA sola vez
   const { data: { session } } = await supaClient.auth.getSession();
-  _applySession(session, onReady);
+  _applySession(session);
+  if (typeof onReady === 'function') onReady();
 
-  // Escuchar cambios (login/logout en otra pestaña, expiración, etc.)
+  // Escuchar cambios posteriores — solo actualiza UI, no reinicia la app
   supaClient.auth.onAuthStateChange((_event, session) => {
-    _applySession(session, onReady);
+    _applySession(session);
   });
 }
 
-function _applySession(session, onReady) {
+function _applySession(session) {
   authState.session    = session;
   authState.user       = session?.user ?? null;
   authState.isLoggedIn = !!session;
 
   _updateUI();
 
-  if (session) {
-    // Ocultar pantalla de login, mostrar app
-    const loginScreen = document.getElementById('loginScreen');
-    const appRoot     = document.getElementById('appRoot');
-    if (loginScreen) loginScreen.classList.remove('visible');
-    if (appRoot)     appRoot.style.display = '';
-    if (typeof onReady === 'function') onReady();
-  } else {
-    // Mostrar pantalla de login, ocultar app
-    const loginScreen = document.getElementById('loginScreen');
-    const appRoot     = document.getElementById('appRoot');
-    if (loginScreen) loginScreen.classList.add('visible');
-    if (appRoot)     appRoot.style.display = 'none';
-  }
+  const loginScreen = document.getElementById('loginScreen');
+  const appRoot     = document.getElementById('appRoot');
+  if (loginScreen) loginScreen.classList.remove('visible');
+  if (appRoot)     appRoot.style.display = '';
 }
 
 /* ────────────────────────────────────────
