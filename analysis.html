@@ -1,831 +1,163 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Análisis — LabStatus Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#080c14;--surface:#0d1421;--surface2:#111827;--border:#1e2d45;
-  --accent:#00d4ff;--green:#00e676;--yellow:#ffb300;--red:#ff4444;
-  --text:#e2e8f0;--muted:#64748b;
-  --font-mono:'Space Mono',monospace;--font-body:'DM Sans',sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh;
-  background-image:radial-gradient(ellipse at 80% 0%,rgba(255,179,0,.04) 0%,transparent 60%);}
-
-/* HEADER */
-header{border-bottom:1px solid var(--border);padding:14px 24px;display:flex;
-  align-items:center;justify-content:space-between;background:rgba(13,20,33,.95);
-  backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
-.logo{font-family:var(--font-mono);font-size:13px;color:var(--accent);letter-spacing:3px;}
-.header-nav{display:flex;gap:8px;}
-.nav-btn{background:transparent;border:1px solid var(--border);color:var(--muted);
-  border-radius:6px;padding:6px 14px;font-family:var(--font-mono);font-size:11px;
-  cursor:pointer;letter-spacing:1px;transition:all .15s;}
-.nav-btn:hover,.nav-btn.active{border-color:var(--accent);color:var(--accent);}
-
-.container{max-width:1000px;margin:0 auto;padding:24px 14px;}
-
-/* TOP BAR */
-.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
-.page-title{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;}
-.btn-primary{background:var(--accent);color:#000;border:none;border-radius:7px;
-  padding:8px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;}
-.btn-primary:hover{background:#00aacc;}
-.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--muted);
-  border-radius:7px;padding:8px 16px;font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .15s;}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
-.btn-success{background:var(--green);color:#000;border:none;border-radius:7px;
-  padding:8px 18px;font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;}
-.btn-success:hover{background:#00bb55;}
-.btn-txt{background:transparent;border:1px solid var(--yellow);color:var(--yellow);
-  border-radius:7px;padding:8px 16px;font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .15s;}
-.btn-txt:hover{background:rgba(255,179,0,.08);}
-
-/* STATUS BAR */
-.status-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
-.status-item{display:flex;align-items:center;gap:6px;font-size:12px;font-family:var(--font-mono);}
-.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.sdot-ok{background:var(--green);}
-.sdot-warn{background:var(--yellow);}
-.sdot-err{background:var(--red);}
-.sync-lbl{font-family:var(--font-mono);font-size:10px;color:var(--muted);}
-
-/* SUMMARY */
-.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  padding:18px;margin-bottom:20px;display:none;}
-.summary-title{font-family:var(--font-mono);font-size:10px;color:var(--accent);
-  letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;}
-.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
-.result-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;}
-.result-num{font-family:var(--font-mono);font-size:20px;font-weight:700;}
-.result-num.green{color:var(--green);}
-.result-num.yellow{color:var(--yellow);}
-.result-num.red{color:var(--red);}
-.result-num.blue{color:var(--accent);}
-.result-label{font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;}
-
-/* PARAM TABLE CARD */
-.table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  margin-bottom:20px;overflow:hidden;position:relative;}
-.table-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--yellow),transparent);}
-.table-card-header{padding:14px 18px;display:flex;align-items:center;
-  justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
-.param-title{font-family:var(--font-mono);font-size:15px;color:var(--yellow);font-weight:700;letter-spacing:1px;}
-.param-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:2px;}
-.table-status{font-size:10px;font-family:var(--font-mono);padding:3px 8px;border-radius:4px;}
-.ts-ok  {color:var(--green); background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);}
-.ts-warn{color:var(--yellow);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.2);}
-.ts-err {color:var(--red);   background:rgba(255,68,68,.08); border:1px solid rgba(255,68,68,.2);}
-.header-right{display:flex;align-items:center;gap:10px;}
-.btn-addcol{background:transparent;border:1px dashed var(--border);color:var(--muted);
-  border-radius:5px;padding:4px 9px;font-size:10px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
-.btn-addcol:hover{border-color:var(--accent);color:var(--accent);}
-
-/* TABLE */
-.data-wrap{overflow-x:auto;padding:0 18px 16px;}
-table{width:100%;border-collapse:collapse;margin-top:12px;}
-thead th{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px;
-  text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);
-  text-transform:uppercase;white-space:nowrap;}
-tbody tr{border-bottom:1px solid rgba(30,45,69,.4);}
-tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:rgba(0,212,255,.02);}
-.cell-code{font-family:var(--font-mono);font-size:12px;color:var(--accent);
-  padding:9px 10px;font-weight:700;white-space:nowrap;}
-.cell-in{padding:5px 6px;}
-.cell-in input{
-  width:100%;min-width:80px;background:var(--surface2);border:1px solid var(--border);
-  border-radius:6px;color:var(--text);padding:7px 8px;font-family:var(--font-mono);
-  font-size:12px;outline:none;transition:border-color .2s;}
-.cell-in input:focus{border-color:var(--accent);}
-.cell-in input.filled{border-color:rgba(0,230,118,.5);}
-.cell-in input::placeholder{color:var(--muted);font-size:11px;}
-.cell-st{padding:6px 10px;font-size:11px;font-family:var(--font-mono);}
-.st-ok{color:var(--green);}
-.st-muted{color:var(--muted);}
-.mr-note{font-size:10px;color:var(--muted);font-family:var(--font-mono);
-  padding:6px 18px 12px;border-top:1px dashed var(--border);margin-top:4px;}
-
-/* ═══════════════════════════════
-   HISTORIAL
-═══════════════════════════════ */
-.hist-section{margin-top:44px;padding-top:32px;border-top:1px solid var(--border);}
-.hist-header{display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:16px;flex-wrap:wrap;gap:12px;}
-.hist-title{font-family:var(--font-mono);font-size:10px;color:var(--muted);
-  letter-spacing:3px;text-transform:uppercase;}
-.search-wrap{position:relative;flex:1;max-width:380px;}
-.search-wrap input{
-  width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);padding:8px 12px 8px 34px;font-family:var(--font-mono);
-  font-size:12px;outline:none;transition:border-color .2s;}
-.search-wrap input:focus{border-color:var(--accent);}
-.search-wrap input::placeholder{color:var(--muted);}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);
-  color:var(--muted);font-size:13px;pointer-events:none;}
-
-/* HIST CARD */
-.hist-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  margin-bottom:10px;overflow:hidden;transition:border-color .2s;}
-.hist-card:hover{border-color:#2a3f5f;}
-.hist-card.hist-open{border-color:#2a3f5f;}
-.hist-row{display:flex;align-items:center;padding:12px 16px;gap:12px;
-  cursor:pointer;user-select:none;}
-.hist-code{font-family:var(--font-mono);font-size:13px;color:var(--accent);
-  font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hist-meta{font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:2px;}
-.hist-params{display:flex;gap:4px;flex-wrap:wrap;max-width:300px;}
-.hist-chip{font-family:var(--font-mono);font-size:10px;padding:2px 7px;border-radius:4px;
-  border:1px solid var(--yellow);color:var(--yellow);background:rgba(255,179,0,.06);white-space:nowrap;}
-.hist-arr{color:var(--muted);font-size:11px;transition:transform .2s;flex-shrink:0;}
-.hist-card.hist-open .hist-arr{transform:rotate(90deg);}
-.hist-body{border-top:1px solid var(--border);display:none;padding:16px;background:rgba(0,0,0,.1);}
-.hist-body.open{display:block;}
-
-/* Read-only hist table */
-.hist-param-title{font-family:var(--font-mono);font-size:11px;color:var(--yellow);
-  font-weight:700;margin:14px 0 7px;letter-spacing:1px;}
-.hist-param-title:first-child{margin-top:0;}
-.hist-table{width:100%;border-collapse:collapse;margin-bottom:4px;}
-.hist-table th{font-family:var(--font-mono);font-size:10px;color:var(--muted);
-  letter-spacing:1px;text-align:left;padding:6px 8px;
-  border-bottom:1px solid var(--border);text-transform:uppercase;}
-.hist-table td{padding:7px 8px;font-family:var(--font-mono);font-size:12px;
-  border-bottom:1px solid rgba(30,45,69,.3);}
-.hist-table td:last-child{border-bottom:none;}
-.hist-table tbody tr:last-child td{border-bottom:none;}
-.hist-table td:first-child{color:var(--accent);font-weight:700;}
-.td-lec{color:var(--green);}
-.td-mr{color:var(--yellow);}
-.td-empty{color:var(--muted);}
-.hist-actions{display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;}
-.btn-hist-txt{background:transparent;border:1px solid var(--yellow);color:var(--yellow);
-  border-radius:6px;padding:5px 13px;font-size:11px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
-.btn-hist-txt:hover{background:rgba(255,179,0,.08);}
-.btn-hist-del{background:transparent;border:1px solid var(--border);color:var(--muted);
-  border-radius:6px;padding:5px 13px;font-size:11px;cursor:pointer;font-family:var(--font-mono);transition:all .15s;}
-.btn-hist-del:hover{border-color:var(--red);color:var(--red);}
-.hist-loading{font-family:var(--font-mono);font-size:11px;color:var(--muted);
-  padding:20px;text-align:center;}
-.hist-empty{font-family:var(--font-mono);font-size:11px;color:var(--muted);
-  padding:30px;text-align:center;}
-
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:60px 20px;}
-.empty-icon{font-size:40px;margin-bottom:14px;opacity:.3;}
-.empty-title{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;}
-.empty-sub{font-size:13px;color:var(--muted);line-height:1.6;}
-.empty-sub b{color:var(--text);}
-
-/* TOAST */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#000;
-  border-radius:10px;padding:12px 18px;font-family:var(--font-mono);font-size:12px;
-  display:none;z-index:300;box-shadow:0 4px 20px rgba(0,230,118,.3);max-width:280px;}
-.toast.show{display:block;animation:fadeIn .3s ease;}
-.toast.err{background:var(--red);color:#fff;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-@media print{
-  header,.btn-row,.top-bar button,.btn-addcol,.hist-section{display:none!important;}
-  body{background:#fff;color:#000;}
-  .table-card{border:1px solid #ccc;break-inside:avoid;}
-  .cell-in input{border:1px solid #999;color:#000;background:#fff;}
-}
-@media(max-width:600px){
-  .hist-params{display:none;}
-  .btn-row{gap:5px;}
-  .btn-row button{padding:7px 10px;font-size:10px;}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabStatus Pro — Análisis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
+  <link rel="stylesheet" href="css/analysis.css">
 </head>
 <body>
 
-<header>
-  <div class="logo">◈ LABSTATUS</div>
-  <div class="header-nav">
-    <button class="nav-btn" onclick="goBack()">← Muestras</button>
-    <span class="nav-btn active">⚗ Análisis</span>
-  </div>
-</header>
+<!-- ════════════════════════════════════════
+     PANTALLA DE LOGIN (visible si no hay sesión)
+     En análisis: el historial es público (solo lectura).
+     Para guardar / eliminar se necesita sesión.
+     El login se muestra solo si el usuario intenta
+     una acción que requiere autenticación.
+════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">◈ LABSTATUS</div>
+    <div class="login-title">Acceso al sistema</div>
 
-<div class="toast" id="toast"></div>
+    <div class="login-label">Email</div>
+    <input class="login-input" id="loginEmail" type="email"
+      placeholder="usuario@laboratorio.com" autocomplete="email">
 
-<div class="container">
+    <div class="login-label">Contraseña</div>
+    <input class="login-input" id="loginPass" type="password"
+      placeholder="••••••••" autocomplete="current-password">
 
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <span class="page-title">⚗ Hoja de Análisis</span>
-    <div class="btn-row">
-      <button class="btn-secondary" onclick="clearData()">✕ Limpiar</button>
-      <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
-      <button class="btn-txt"       onclick="exportTxt(null)">📄 Exportar TXT</button>
-      <button class="btn-primary"   onclick="validateAll()">✓ Validar</button>
-      <button class="btn-success"   onclick="pushResultsAndBack()">↩ Guardar y volver</button>
+    <button class="btn-login" id="btnLoginSubmit" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="loginError"></div>
+
+    <!-- Volver sin loguearse -->
+    <div style="text-align:center;margin-top:14px">
+      <button onclick="document.getElementById('loginScreen').classList.remove('visible')"
+        style="background:transparent;border:none;color:var(--muted);font-size:11px;
+               font-family:var(--font-mono);cursor:pointer;letter-spacing:1px">
+        ← Volver sin ingresar
+      </button>
     </div>
   </div>
+</div>
 
-  <!-- STATUS BAR -->
-  <div class="status-bar">
-    <div class="status-item"><div class="sdot sdot-ok"></div><span id="stTotal">—</span></div>
-    <div class="status-item"><div class="sdot sdot-warn"></div><span id="stMissing">—</span></div>
-    <div class="status-item"><div class="sdot sdot-err"></div><span id="stMR">—</span></div>
-    <div class="status-item" style="margin-left:auto">
-      <div class="sdot" id="syncDot" style="background:var(--green)"></div>
-      <span class="sync-lbl" id="syncLbl">listo</span>
+<!-- ════════════════════════════════════════
+     APP PRINCIPAL (siempre visible en análisis)
+     appRoot no se oculta aquí — el historial
+     es de lectura pública. Solo guardar/borrar requiere login.
+════════════════════════════════════════ -->
+<div id="appRoot">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">◈ LABSTATUS</div>
+
+    <div class="header-nav">
+      <button class="nav-btn" onclick="goBack()">← Muestras</button>
+      <span class="nav-btn active">⚗ Análisis</span>
+
+      <!-- Botón Login (visible si NO está logueado) -->
+      <button class="nav-btn" id="btnLoginHeader"
+        onclick="document.getElementById('loginScreen').classList.add('visible')"
+        style="display:none">
+        🔒 Ingresar
+      </button>
+
+      <!-- Badge de usuario + Logout (visibles si está logueado) -->
+      <span class="user-badge" id="userBadge" style="display:none"></span>
+      <button class="btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">Salir</button>
     </div>
-  </div>
+  </header>
 
-  <!-- SUMMARY -->
-  <div class="summary-card" id="summaryCard">
-    <div class="summary-title">Resumen de validación</div>
-    <div class="result-grid" id="summaryGrid"></div>
-  </div>
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
 
-  <!-- ACTIVE TABLES -->
-  <div id="tablesContainer"></div>
+  <!-- CONTENIDO -->
+  <div class="container">
 
-  <!-- EMPTY STATE (no payload) -->
-  <div class="empty-state" id="emptyState" style="display:none">
-    <div class="empty-icon">⚗</div>
-    <div class="empty-title">Sin muestras cargadas</div>
-    <div class="empty-sub">Ve a <b>Muestras</b>, activa <b>Seleccionar</b>,<br>elige las órdenes y pulsa <b>⚗ Analizar</b>.</div>
-  </div>
-
-  <!-- ═══════════════════════════════════════
-       HISTORIAL DE ANÁLISIS
-  ════════════════════════════════════════ -->
-  <div class="hist-section">
-    <div class="hist-header">
-      <span class="hist-title">Historial de análisis</span>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input id="histSearch" placeholder="Buscar por código de muestra..." oninput="renderHistory()">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <span class="page-title">⚗ Hoja de Análisis</span>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="clearData()">✕ Limpiar</button>
+        <button class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+        <button class="btn-txt"       onclick="exportTxt(null)">📄 Exportar TXT</button>
+        <button class="btn-primary"   onclick="validateAll()">✓ Validar</button>
+        <button class="btn-success"   onclick="pushResultsAndBack()">↩ Guardar y volver</button>
       </div>
     </div>
-    <div id="historyList"><div class="hist-loading">Cargando historial...</div></div>
-  </div>
 
-</div><!-- /container -->
-
-<script>
-// ════════════════════════════════════════
-//  SUPABASE CONFIG
-//  Necesitas crear la tabla analysis_history en Supabase:
-//
-//  CREATE TABLE analysis_history (
-//    id       TEXT PRIMARY KEY,
-//    codes    TEXT NOT NULL,
-//    saved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-//    data     TEXT NOT NULL
-//  );
-//  ALTER TABLE analysis_history ENABLE ROW LEVEL SECURITY;
-//  CREATE POLICY "allow_all" ON analysis_history FOR ALL USING (true) WITH CHECK (true);
-// ════════════════════════════════════════
-const SUPA_URL = "https://puwgkmjxystqfgubmtwv.supabase.co";
-const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1d2drbWp4eXN0cWZndWJtdHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0MzA2NTYsImV4cCI6MjA5MzAwNjY1Nn0.ZeV9g3p2dfdRuGguT9nrBUaqq2-RH8uZklhlOff2vxc";
-
-const supaH = {
-  "Content-Type":  "application/json",
-  "apikey":        SUPA_KEY,
-  "Authorization": "Bearer " + SUPA_KEY
-};
-
-// ════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════
-let payload     = [];   // [{orderId,orderCode,client,subCode,subId,params:[]}]
-let tableData   = {};   // {paramName:[{subCode,subId,lectura,mr,extra:{}}]}
-let extraCols   = {};   // {paramName:[colName,...]}
-let histRecords = [];   // registros cargados desde Supabase
-let expandedHist= null; // id del hist-card abierto
-
-// ════════════════════════════════════════
-//  SYNC INDICATOR
-// ════════════════════════════════════════
-function setSyncStatus(s) {
-  const dot = document.getElementById('syncDot');
-  const lbl = document.getElementById('syncLbl');
-  dot.style.background = s==='syncing'?'var(--yellow)':s==='error'?'var(--red)':'var(--green)';
-  lbl.textContent = s==='syncing'?'guardando...':s==='error'?'error':'guardado';
-}
-
-// ════════════════════════════════════════
-//  INIT
-// ════════════════════════════════════════
-function init() {
-  const raw = sessionStorage.getItem('analyze_payload');
-  if (!raw) {
-    showEmpty();
-  } else {
-    try {
-      payload = JSON.parse(raw);
-      if (payload.length) buildTables();
-      else showEmpty();
-    } catch(e) { showEmpty(); }
-  }
-  loadHistory();
-}
-
-function showEmpty() {
-  document.getElementById('emptyState').style.display = 'block';
-  document.getElementById('tablesContainer').style.display = 'none';
-}
-
-// ════════════════════════════════════════
-//  BUILD TABLES FROM PAYLOAD
-// ════════════════════════════════════════
-function buildTables() {
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('tablesContainer').style.display = 'block';
-
-  // Group samples by parameter
-  const pm = {};
-  payload.forEach(s => {
-    s.params.forEach(p => {
-      if (!pm[p]) pm[p] = [];
-      if (!pm[p].find(x=>x.subId===s.subId))
-        pm[p].push({subCode:s.subCode, subId:s.subId});
-    });
-  });
-
-  tableData = {};
-  extraCols  = {};
-  Object.entries(pm).forEach(([param, rows]) => {
-    tableData[param] = rows.map(r=>({subCode:r.subCode, subId:r.subId, lectura:'', mr:'', extra:{}}));
-    extraCols[param] = [];
-  });
-
-  renderAll();
-  updateStatusBar();
-}
-
-// ════════════════════════════════════════
-//  RENDER ALL ACTIVE TABLES
-// ════════════════════════════════════════
-function renderAll() {
-  const container = document.getElementById('tablesContainer');
-  const params = Object.keys(tableData);
-  if (!params.length) { showEmpty(); return; }
-  container.innerHTML = params.map(p=>renderTable(p)).join('');
-}
-
-function renderTable(param) {
-  const rows   = tableData[param];
-  const ec     = extraCols[param]||[];
-  const allLec = rows.every(r=>r.lectura.trim()!=='');
-  const hasMR  = rows.some(r=>r.mr.trim()!=='');
-  const stCls  = allLec&&hasMR?'ts-ok':!allLec?'ts-err':'ts-warn';
-  const stTxt  = allLec&&hasMR?'✓ Completo':!allLec?'⚠ Faltan lecturas':'⚠ Sin MR';
-
-  const extraTh = ec.map(col=>
-    `<th>${esc(col)} <button class="btn-addcol" style="padding:1px 4px;font-size:9px"
-      onclick="removeCol('${esc(param)}','${esc(col)}')">✕</button></th>`
-  ).join('');
-
-  const rowsHtml = rows.map((r,i) => {
-    const lFilled = r.lectura.trim()!=='';
-    const extraTd = ec.map(col=>
-      `<td class="cell-in"><input type="text" value="${esc(r.extra[col]||'')}" placeholder="-"
-        oninput="setExtra('${esc(param)}',${i},'${esc(col)}',this.value)"></td>`
-    ).join('');
-    return `
-    <tr>
-      <td class="cell-code">${esc(r.subCode)}</td>
-      <td class="cell-in">
-        <input type="number" step="any" value="${esc(r.lectura)}" placeholder="Lectura"
-          class="${lFilled?'filled':''}" id="lec_${slugify(param)}_${i}"
-          oninput="setLectura('${esc(param)}',${i},this.value)">
-      </td>
-      <td class="cell-in">
-        <input type="number" step="any" value="${esc(r.mr)}" placeholder="MR (opt.)"
-          class="${r.mr.trim()?'filled':''}"
-          oninput="setMR('${esc(param)}',${i},this.value)">
-      </td>
-      ${extraTd}
-      <td class="cell-st ${lFilled?'st-ok':'st-muted'}">${lFilled?'✓':'—'}</td>
-    </tr>`;
-  }).join('');
-
-  return `
-  <div class="table-card" id="tc_${slugify(param)}">
-    <div class="table-card-header">
-      <div>
-        <div class="param-title">${esc(param)}</div>
-        <div class="param-meta">${rows.length} muestra${rows.length!==1?'s':''}</div>
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <div class="status-item">
+        <div class="sdot sdot-ok"></div>
+        <span id="stTotal">—</span>
       </div>
-      <div class="header-right">
-        <button class="btn-addcol" onclick="addCol('${esc(param)}')">+ Columna</button>
-        <span class="table-status ${stCls}" id="ts_${slugify(param)}">${stTxt}</span>
+      <div class="status-item">
+        <div class="sdot sdot-warn"></div>
+        <span id="stMissing">—</span>
+      </div>
+      <div class="status-item">
+        <div class="sdot sdot-err"></div>
+        <span id="stMR">—</span>
+      </div>
+      <div class="status-item" style="margin-left:auto">
+        <div class="sdot" id="syncDot" style="background:var(--green)"></div>
+        <span class="sync-lbl" id="syncLbl">listo</span>
       </div>
     </div>
-    <div class="data-wrap">
-      <table>
-        <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th>${extraTh}<th>Estado</th></tr></thead>
-        <tbody>${rowsHtml}</tbody>
-      </table>
+
+    <!-- RESUMEN DE VALIDACIÓN -->
+    <div class="summary-card" id="summaryCard">
+      <div class="summary-title">Resumen de validación</div>
+      <div class="result-grid" id="summaryGrid"></div>
     </div>
-    <div class="mr-note">* MR = Material de Referencia. Mínimo una fila por tabla debe tener MR.</div>
-  </div>`;
-}
 
-// ════════════════════════════════════════
-//  DATA SETTERS — actualizan modelo sin re-render completo
-// ════════════════════════════════════════
-function setLectura(param, idx, val) {
-  tableData[param][idx].lectura = val;
-  const el = document.getElementById('lec_'+slugify(param)+'_'+idx);
-  if (el) el.className = val.trim()?'filled':'';
-  updateTableStatus(param);
-  updateStatusBar();
-}
-function setMR(param, idx, val) {
-  tableData[param][idx].mr = val;
-  updateTableStatus(param);
-  updateStatusBar();
-}
-function setExtra(param, idx, col, val) {
-  if (!tableData[param][idx].extra) tableData[param][idx].extra={};
-  tableData[param][idx].extra[col] = val;
-}
+    <!-- TABLAS ACTIVAS (generadas por JS) -->
+    <div id="tablesContainer"></div>
 
-function updateTableStatus(param) {
-  const rows   = tableData[param]||[];
-  const allLec = rows.every(r=>r.lectura.trim()!=='');
-  const hasMR  = rows.some(r=>r.mr.trim()!=='');
-  const el = document.getElementById('ts_'+slugify(param));
-  if (!el) return;
-  if (allLec&&hasMR)  { el.className='table-status ts-ok';  el.textContent='✓ Completo'; }
-  else if (!allLec)   { el.className='table-status ts-err'; el.textContent='⚠ Faltan lecturas'; }
-  else                { el.className='table-status ts-warn';el.textContent='⚠ Sin MR'; }
-}
-
-function updateStatusBar() {
-  const params = Object.keys(tableData);
-  let totalR=0,filledR=0,tabsMR=0;
-  params.forEach(p=>{
-    tableData[p].forEach(r=>{ totalR++; if(r.lectura.trim()) filledR++; });
-    if(tableData[p].some(r=>r.mr.trim())) tabsMR++;
-  });
-  const allSubs = new Set(payload.map(s=>s.subCode)).size;
-  document.getElementById('stTotal').textContent   = `${allSubs} muestras · ${params.length} parámetros`;
-  document.getElementById('stMissing').textContent = totalR-filledR>0?`${totalR-filledR} lecturas faltantes`:'✓ Todas ingresadas';
-  document.getElementById('stMR').textContent      = tabsMR===params.length?'✓ MR en todas las tablas':`⚠ ${params.length-tabsMR} tabla(s) sin MR`;
-}
-
-// ════════════════════════════════════════
-//  EXTRA COLUMNS
-// ════════════════════════════════════════
-function addCol(param) {
-  const name = prompt('Nombre de columna (ej: Dilución, Abs):');
-  if (!name?.trim()) return;
-  const col = name.trim();
-  if (extraCols[param].includes(col)) return;
-  extraCols[param].push(col);
-  tableData[param].forEach(r=>{ r.extra[col]=''; });
-  reRenderTable(param);
-}
-function removeCol(param, col) {
-  extraCols[param] = extraCols[param].filter(c=>c!==col);
-  tableData[param].forEach(r=>{ delete r.extra[col]; });
-  reRenderTable(param);
-}
-function reRenderTable(param) {
-  const old = document.getElementById('tc_'+slugify(param));
-  if (!old) return;
-  const tmp = document.createElement('div');
-  tmp.innerHTML = renderTable(param);
-  old.replaceWith(tmp.firstElementChild);
-}
-
-// ════════════════════════════════════════
-//  VALIDATE
-// ════════════════════════════════════════
-function validateAll() {
-  const params = Object.keys(tableData);
-  let ok=0,warn=0,err=0;
-  params.forEach(p=>{
-    const allLec=tableData[p].every(r=>r.lectura.trim()!=='');
-    const hasMR =tableData[p].some(r=>r.mr.trim()!=='');
-    if(allLec&&hasMR) ok++;
-    else if(!allLec)  err++;
-    else              warn++;
-  });
-  renderAll();
-  const card = document.getElementById('summaryCard');
-  card.style.display='block';
-  document.getElementById('summaryGrid').innerHTML=`
-    <div class="result-item"><div class="result-num green">${ok}</div><div class="result-label">Tablas OK</div></div>
-    <div class="result-item"><div class="result-num yellow">${warn}</div><div class="result-label">Sin MR</div></div>
-    <div class="result-item"><div class="result-num red">${err}</div><div class="result-label">Incompletas</div></div>
-    <div class="result-item"><div class="result-num blue">${params.length}</div><div class="result-label">Total params</div></div>`;
-  card.scrollIntoView({behavior:'smooth'});
-}
-
-// ════════════════════════════════════════
-//  EXPORTAR TXT
-//  record=null → usa datos actuales de pantalla
-//  record=obj  → usa datos de historial guardado
-// ════════════════════════════════════════
-function exportTxt(record) {
-  const isHist  = record !== null;
-  const date    = isHist ? new Date(record.savedAt) : new Date();
-  const dateStr = date.toLocaleString('es-PE');
-  const data    = isHist ? record.tableData : tableData;
-  const ec      = isHist ? record.extraCols : extraCols;
-  const codes   = isHist
-    ? [...new Set(Object.values(data).flatMap(rows=>rows.map(r=>r.subCode)))]
-    : [...new Set(payload.map(s=>s.subCode))];
-
-  if (!Object.keys(data).length) {
-    showToast('⚠ Sin datos para exportar', true); return;
-  }
-
-  let txt = '==================================================\n';
-  txt    += '  LABSTATUS PRO — REPORTE DE ANÁLISIS\n';
-  txt    += `  Fecha    : ${dateStr}\n`;
-  txt    += `  Muestras : ${codes.join(', ')}\n`;
-  txt    += '==================================================\n\n';
-
-  Object.entries(data).forEach(([param, rows]) => {
-    txt += `PARÁMETRO: ${param}\n`;
-    txt += '─'.repeat(48) + '\n';
-    const cols = ['Muestra','Lectura','MR',...(ec[param]||[])];
-    // header row
-    txt += cols.map(c=>c.padEnd(16)).join('') + '\n';
-    txt += '─'.repeat(cols.length*16) + '\n';
-    rows.forEach(r => {
-      const vals = [
-        (r.subCode||'').padEnd(16),
-        (r.lectura||'—').padEnd(16),
-        (r.mr||'—').padEnd(16),
-        ...(ec[param]||[]).map(col=>(r.extra?.[col]||'—').padEnd(16))
-      ];
-      txt += vals.join('') + '\n';
-    });
-    txt += '\n';
-  });
-
-  txt += '==================================================\n';
-  txt += '  Generado por LabStatus Pro\n';
-  txt += '==================================================\n';
-
-  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `analisis_${(codes[0]||'reporte').replace(/\//g,'-')}_${date.toISOString().slice(0,10)}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('📄 TXT descargado');
-}
-
-// ════════════════════════════════════════
-//  GUARDAR EN SUPABASE HISTORIAL
-//  Tabla requerida en Supabase:
-//  CREATE TABLE analysis_history (
-//    id TEXT PRIMARY KEY, codes TEXT NOT NULL,
-//    saved_at TIMESTAMPTZ NOT NULL DEFAULT now(), data TEXT NOT NULL
-//  );
-//  ALTER TABLE analysis_history ENABLE ROW LEVEL SECURITY;
-//  CREATE POLICY "allow_all" ON analysis_history FOR ALL USING (true) WITH CHECK (true);
-// ════════════════════════════════════════
-async function saveToHistory() {
-  const codes = [...new Set(payload.map(s=>s.subCode))];
-  if (!codes.length) return null;
-
-  const record = {
-    id:       crypto.randomUUID(),
-    codes:    codes.join(', '),
-    saved_at: new Date().toISOString(),
-    data:     JSON.stringify({
-      tableData,
-      extraCols,
-      payload,
-      savedAt: new Date().toISOString()
-    })
-  };
-
-  setSyncStatus('syncing');
-  try {
-    const res = await fetch(SUPA_URL+'/rest/v1/analysis_history', {
-      method:  'POST',
-      headers: {...supaH, "Prefer":"return=minimal"},
-      body:    JSON.stringify(record)
-    });
-    if (!res.ok) {
-      const msg = await res.text();
-      console.error('Supabase error:', msg);
-      throw new Error(msg);
-    }
-    setSyncStatus('ok');
-    // Add to local list so it shows immediately without re-fetching
-    histRecords.unshift({
-      id:        record.id,
-      codes:     record.codes,
-      savedAt:   record.saved_at,
-      tableData: JSON.parse(JSON.stringify(tableData)),
-      extraCols: JSON.parse(JSON.stringify(extraCols)),
-      payload:   JSON.parse(JSON.stringify(payload))
-    });
-    renderHistory();
-    return record;
-  } catch(e) {
-    console.error('saveToHistory error:', e);
-    setSyncStatus('error');
-    return null;
-  }
-}
-
-// ════════════════════════════════════════
-//  CARGAR HISTORIAL DESDE SUPABASE
-// ════════════════════════════════════════
-async function loadHistory() {
-  try {
-    const res = await fetch(
-      SUPA_URL+'/rest/v1/analysis_history?select=id,codes,saved_at,data&order=saved_at.desc&limit=200',
-      {headers: supaH}
-    );
-    if (!res.ok) throw await res.text();
-    const rows = await res.json();
-    histRecords = rows.map(r => {
-      let parsed = {};
-      try { parsed = JSON.parse(r.data); } catch(e){}
-      return {
-        id:        r.id,
-        codes:     r.codes,
-        savedAt:   r.saved_at,
-        tableData: parsed.tableData||{},
-        extraCols: parsed.extraCols||{},
-        payload:   parsed.payload||[]
-      };
-    });
-    renderHistory();
-  } catch(e) {
-    console.error('loadHistory error:', e);
-    document.getElementById('historyList').innerHTML =
-      '<div class="hist-empty">⚠ No se pudo cargar el historial. Verifica tu conexión o que la tabla analysis_history exista en Supabase.</div>';
-  }
-}
-
-async function deleteHistRecord(id) {
-  if (!confirm('¿Eliminar este registro del historial? No se puede deshacer.')) return;
-  try {
-    const res = await fetch(SUPA_URL+'/rest/v1/analysis_history?id=eq.'+id, {
-      method:'DELETE', headers:supaH
-    });
-    if (!res.ok) throw 0;
-    histRecords = histRecords.filter(r=>r.id!==id);
-    if (expandedHist===id) expandedHist=null;
-    renderHistory();
-    showToast('🗑 Registro eliminado');
-  } catch(e) { showToast('⚠ Error al eliminar', true); }
-}
-
-// ════════════════════════════════════════
-//  RENDER HISTORIAL
-// ════════════════════════════════════════
-function renderHistory() {
-  const q      = (document.getElementById('histSearch').value||'').toLowerCase().trim();
-  const list   = document.getElementById('historyList');
-
-  let filtered = histRecords;
-  if (q) {
-    filtered = histRecords.filter(r =>
-      r.codes.toLowerCase().includes(q) ||
-      new Date(r.savedAt).toLocaleString('es-PE').toLowerCase().includes(q)
-    );
-  }
-
-  if (!filtered.length) {
-    list.innerHTML = `<div class="hist-empty">${q?`Sin resultados para "${esc(q)}"` :'Sin registros de análisis aún'}</div>`;
-    return;
-  }
-
-  list.innerHTML = filtered.map(r => {
-    const isOpen   = expandedHist===r.id;
-    const params   = Object.keys(r.tableData);
-    const dateStr  = new Date(r.savedAt).toLocaleString('es-PE');
-    const chips    = params.map(p=>`<span class="hist-chip">${esc(p)}</span>`).join('');
-
-    // Build detail tables (read-only)
-    const bodyHtml = params.map(param => {
-      const rows = r.tableData[param]||[];
-      const ec   = r.extraCols[param]||[];
-      const extraTh = ec.map(c=>`<th>${esc(c)}</th>`).join('');
-      const rowsHtml = rows.map(row=>`
-        <tr>
-          <td>${esc(row.subCode||'')}</td>
-          <td class="${row.lectura?'td-lec':'td-empty'}">${esc(row.lectura||'—')}</td>
-          <td class="${row.mr?'td-mr':'td-empty'}">${esc(row.mr||'—')}</td>
-          ${ec.map(c=>`<td>${esc(row.extra?.[c]||'—')}</td>`).join('')}
-        </tr>`).join('');
-      return `
-        <div class="hist-param-title">▸ ${esc(param)}</div>
-        <div style="overflow-x:auto">
-          <table class="hist-table">
-            <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th>${extraTh}</tr></thead>
-            <tbody>${rowsHtml}</tbody>
-          </table>
-        </div>`;
-    }).join('');
-
-    // Serialize record safely for inline onclick
-    const recJson = JSON.stringify(r).replace(/\\/g,'\\\\').replace(/"/g,'&quot;');
-
-    return `
-    <div class="hist-card ${isOpen?'hist-open':''}" id="hc_${r.id}">
-      <div class="hist-row" onclick="toggleHist('${r.id}')">
-        <div style="flex:1;min-width:0">
-          <div class="hist-code">${esc(r.codes)}</div>
-          <div class="hist-meta">${dateStr} · ${params.length} parámetro${params.length!==1?'s':''}</div>
-        </div>
-        <div class="hist-params">${chips}</div>
-        <span class="hist-arr" style="margin-left:12px">▶</span>
+    <!-- ESTADO VACÍO (sin payload) -->
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="empty-icon">⚗</div>
+      <div class="empty-title">Sin muestras cargadas</div>
+      <div class="empty-sub">
+        Ve a <b>Muestras</b>, activa <b>Seleccionar</b>,<br>
+        elige las órdenes y pulsa <b>⚗ Analizar</b>.
       </div>
-      <div class="hist-body ${isOpen?'open':''}" id="hb_${r.id}">
-        ${bodyHtml}
-        <div class="hist-actions">
-          <button class="btn-hist-txt" onclick="exportTxtFromHist('${r.id}')">📄 Exportar TXT</button>
-          <button class="btn-hist-del" onclick="deleteHistRecord('${r.id}')">🗑 Eliminar</button>
+    </div>
+
+    <!-- HISTORIAL DE ANÁLISIS -->
+    <div class="hist-section">
+      <div class="hist-header">
+        <span class="hist-title">Historial de análisis</span>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input id="histSearch" placeholder="Buscar por código de muestra..."
+            oninput="renderHistory()">
         </div>
       </div>
-    </div>`;
-  }).join('');
-}
+      <div id="historyList">
+        <div class="hist-loading">Cargando historial...</div>
+      </div>
+    </div>
 
-function toggleHist(id) {
-  expandedHist = expandedHist===id ? null : id;
-  renderHistory();
-}
+  </div><!-- /container -->
 
-// Called from history card button — looks up record by id to avoid inline JSON issues
-function exportTxtFromHist(id) {
-  const r = histRecords.find(x=>x.id===id);
-  if (r) exportTxt(r);
-}
+</div><!-- /appRoot -->
 
-// ════════════════════════════════════════
-//  GUARDAR Y VOLVER A MUESTRAS
-// ════════════════════════════════════════
-async function pushResultsAndBack() {
-  // 1. Collect filled params to push back as completed
-  const results = [];
-  Object.entries(tableData).forEach(([paramName, rows]) => {
-    rows.forEach(r => {
-      if (r.lectura.trim()!=='') results.push({subId:r.subId, paramName});
-    });
-  });
-  if (results.length) {
-    sessionStorage.setItem('analysis_results', JSON.stringify(results));
-  }
+<!-- ════════════════════════════════════════
+     SCRIPTS
+     Orden:
+     1. Supabase SDK
+     2. auth.js  → supaClient, authState, initAuth, doLogin, doLogout
+     3. analysis.js → usa todo lo anterior
+════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js"></script>
+<script src="js/analysis.js"></script>
 
-  // 2. Save to Supabase history
-  const saved = await saveToHistory();
-  if (saved) {
-    showToast('✓ Guardado en historial');
-  } else {
-    showToast('⚠ No se pudo guardar en historial\n(los parámetros sí se marcarán)', true);
-  }
-
-  setTimeout(()=>{ location.href='status-pro.html'; }, 1300);
-}
-
-function goBack() { location.href='status-pro.html'; }
-
-function clearData() {
-  if (!confirm('¿Limpiar todos los datos ingresados?')) return;
-  Object.values(tableData).forEach(rows=>rows.forEach(r=>{ r.lectura=''; r.mr=''; r.extra={}; }));
-  renderAll(); updateStatusBar();
-  document.getElementById('summaryCard').style.display='none';
-}
-
-// ════════════════════════════════════════
-//  UTILS
-// ════════════════════════════════════════
-function showToast(msg, isErr=false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className   = 'toast show' + (isErr?' err':'');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(()=>t.classList.remove('show'), 2500);
-}
-function esc(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-function slugify(str) {
-  return String(str||'').replace(/[^a-z0-9]/gi,'_');
-}
-
-init();
-</script>
 </body>
 </html>

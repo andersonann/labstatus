@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabStatus Pro — Muestras</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/shared.css">
+  <link rel="stylesheet" href="css/status.css">
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     PANTALLA DE LOGIN (visible si no hay sesión)
+════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">◈ LABSTATUS</div>
+    <div class="login-title">Acceso al sistema</div>
+
+    <div class="login-label">Email</div>
+    <input class="login-input" id="loginEmail" type="email"
+      placeholder="usuario@laboratorio.com" autocomplete="email">
+
+    <div class="login-label">Contraseña</div>
+    <input class="login-input" id="loginPass" type="password"
+      placeholder="••••••••" autocomplete="current-password">
+
+    <button class="btn-login" id="btnLoginSubmit" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     APP PRINCIPAL
+════════════════════════════════════════ -->
+<div id="appRoot" style="display:none">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">◈ LABSTATUS</div>
+
+    <div class="header-nav">
+      <button class="nav-btn active">Muestras</button>
+      <button class="nav-btn" onclick="location.href='analysis.html'">⚗ Análisis</button>
+
+      <!-- Botón Login (visible si NO está logueado) -->
+      <button class="nav-btn" id="btnLoginHeader" onclick="document.getElementById('loginScreen').classList.add('visible')" style="display:none">
+        🔒 Ingresar
+      </button>
+
+      <!-- Badge de usuario + Logout (visibles si está logueado) -->
+      <span class="user-badge" id="userBadge" style="display:none"></span>
+      <button class="btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">Salir</button>
+    </div>
+
+    <div class="header-stats">
+      <span><b id="hTotal">0</b> OS</span>
+      <span><b id="hSubs">0</b> muestras</span>
+      <span><b id="hDone">0</b> completadas</span>
+      <span>
+        <span class="sync-dot" id="syncDot"></span>
+        <span id="syncTxt" style="font-size:10px">ok</span>
+      </span>
+    </div>
+  </header>
+
+  <!-- MODAL CONFIRMAR ELIMINACIÓN -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 id="modalTitle">⚠ Confirmar eliminación</h3>
+      <p id="modalMsg"></p>
+      <div class="modal-actions">
+        <button class="btn-cancel-modal" onclick="closeModal()">Cancelar</button>
+        <button class="btn-confirm-del" id="modalConfirmBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK ACTION BAR -->
+  <div class="bulk-bar" id="bulkBar">
+    <span class="bulk-count" id="bulkCount">0 seleccionadas</span>
+    <button class="btn-bulk-analyze" onclick="goAnalyze()">⚗ Analizar</button>
+    <button class="btn-bulk-del" onclick="bulkDelete()">🗑 Eliminar</button>
+    <button class="btn-bulk-cancel" onclick="clearSelection()">Cancelar</button>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="container">
+
+    <!-- FORMULARIO NUEVA OS -->
+    <div class="add-card">
+      <div class="add-title">+ Nueva orden de servicio</div>
+      <div class="form-row">
+        <div>
+          <div class="input-label">Código OS *</div>
+          <input id="fCode" placeholder="ej. 9345 o ICP1">
+        </div>
+        <div>
+          <div class="input-label">Parámetros (separados por coma)</div>
+          <input id="fParams" placeholder="ej. Au, Ag, Cu">
+        </div>
+        <div>
+          <div class="input-label">Cliente</div>
+          <input id="fClient" placeholder="Nombre del cliente">
+        </div>
+        <div>
+          <div class="input-label">N muestras</div>
+          <input id="fN" type="number" min="1" placeholder="1">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div>
+          <div class="input-label">Estado inicial</div>
+          <select id="fStatus">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En proceso">En proceso</option>
+          </select>
+        </div>
+        <button class="btn-add" onclick="addOrder()">+ Agregar</button>
+      </div>
+    </div>
+
+    <!-- BARRA DE PROGRESO -->
+    <div class="progress-card">
+      <span class="progress-label">PROGRESO GENERAL</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+
+    <!-- ÓRDENES ACTIVAS -->
+    <div class="toolbar">
+      <span class="section-title">
+        Activas <span class="badge-count" id="countActive">0</span>
+      </span>
+      <button class="btn-ghost" id="btnSelect" onclick="toggleSelectionMode()">☐ Seleccionar</button>
+    </div>
+    <div id="activeList"></div>
+
+    <!-- HISTORIAL COMPLETADAS -->
+    <div class="history-section">
+      <div class="toolbar">
+        <span class="section-title">
+          Historial completadas <span class="badge-count" id="countHistory">0</span>
+        </span>
+      </div>
+      <div id="historyList"></div>
+    </div>
+
+  </div><!-- /container -->
+
+</div><!-- /appRoot -->
+
+<!-- ════════════════════════════════════════
+     SCRIPTS
+     Orden importante:
+     1. Supabase SDK
+     2. auth.js  → define supaClient, authState, initAuth, doLogin, doLogout
+     3. status.js → usa todo lo anterior
+════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js"></script>
+<script src="js/status.js"></script>
+
+</body>
+</html>
