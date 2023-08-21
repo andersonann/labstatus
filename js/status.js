@@ -167,7 +167,8 @@ function cloneParams(params) {
   return params.map(p => ({ name: p.name, done: false, auto: false }));
 }
 function sortOrders() {
-  orders.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true, sensitivity: 'base' }));
+  // Mayor a menor: 9715, 9345, 4564...
+  orders.sort((a, b) => b.code.localeCompare(a.code, undefined, { numeric: true, sensitivity: 'base' }));
 }
 function orderStatus(o) {
   const subs = o.subsamples || [];

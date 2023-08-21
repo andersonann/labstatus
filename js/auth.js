@@ -49,15 +49,20 @@ function _applySession(session, onReady) {
 
   _updateUI();
 
-  // La app SIEMPRE es visible — login solo cierra el overlay
-  const loginScreen = document.getElementById('loginScreen');
-  const appRoot     = document.getElementById('appRoot');
-
-  if (loginScreen) loginScreen.classList.remove('visible');
-  if (appRoot)     appRoot.style.display = '';
-
-  // Siempre llamar onReady (con o sin sesión)
-  if (typeof onReady === 'function') onReady();
+  if (session) {
+    // Ocultar pantalla de login, mostrar app
+    const loginScreen = document.getElementById('loginScreen');
+    const appRoot     = document.getElementById('appRoot');
+    if (loginScreen) loginScreen.classList.remove('visible');
+    if (appRoot)     appRoot.style.display = '';
+    if (typeof onReady === 'function') onReady();
+  } else {
+    // Mostrar pantalla de login, ocultar app
+    const loginScreen = document.getElementById('loginScreen');
+    const appRoot     = document.getElementById('appRoot');
+    if (loginScreen) loginScreen.classList.add('visible');
+    if (appRoot)     appRoot.style.display = 'none';
+  }
 }
 
 /* ────────────────────────────────────────

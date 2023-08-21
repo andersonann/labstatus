@@ -49,6 +49,7 @@ function showEmpty() {
 
 // ════════════════════════════════════════
 //  BUILD TABLES FROM PAYLOAD
+//  Recupera datos previos del historial si existen
 // ════════════════════════════════════════
 function buildTables() {
   document.getElementById('emptyState').style.display = 'none';
@@ -66,12 +67,52 @@ function buildTables() {
   tableData = {};
   extraCols  = {};
   Object.entries(pm).forEach(([param, rows]) => {
-    tableData[param] = rows.map(r => ({ subCode: r.subCode, subId: r.subId, lectura: '', mr: '', extra: {} }));
+    tableData[param] = rows.map(r => ({ subCode: r.subCode, subId: r.subId, lectura: '', mr: '', fd: '', extra: {} }));
     extraCols[param] = [];
   });
 
+  // Intentar rellenar con datos del historial más reciente que tenga estas muestras
+  _restoreFromHistory();
+
   renderAll();
   updateStatusBar();
+}
+
+// Busca en histRecords el registro más reciente que contenga
+// alguna de las muestras actuales y pre-rellena los inputs
+function _restoreFromHistory() {
+  if (!histRecords.length) return;
+  const subIds = new Set(payload.map(s => s.subId));
+
+  // Recorrer del más reciente al más antiguo
+  for (const rec of histRecords) {
+    let matched = false;
+    Object.entries(rec.tableData || {}).forEach(([param, rows]) => {
+      if (!tableData[param]) return;
+      rows.forEach(hr => {
+        if (!subIds.has(hr.subId)) return;
+        const local = tableData[param].find(r => r.subId === hr.subId);
+        if (!local) return;
+        // Solo pre-rellenar si el local está vacío
+        if (!local.lectura && hr.lectura) local.lectura = hr.lectura;
+        if (!local.mr      && hr.mr)      local.mr      = hr.mr;
+        if (!local.fd      && hr.fd)      local.fd      = hr.fd;
+        if (hr.extra) {
+          Object.entries(hr.extra).forEach(([k, v]) => {
+            if (!local.extra[k] && v) local.extra[k] = v;
+          });
+        }
+        matched = true;
+      });
+      // Restaurar columnas extra
+      if (matched && rec.extraCols?.[param]) {
+        rec.extraCols[param].forEach(col => {
+          if (!extraCols[param].includes(col)) extraCols[param].push(col);
+        });
+      }
+    });
+    if (matched) break; // Usar solo el más reciente que coincida
+  }
 }
 
 // ════════════════════════════════════════
@@ -108,13 +149,18 @@ function renderTable(param) {
       <td class="cell-code">${esc(r.subCode)}</td>
       <td class="cell-in">
         <input type="number" step="any" value="${esc(r.lectura)}" placeholder="Lectura"
-          class="${lFilled ? 'filled' : ''}" id="lec_${slugify(param)}_${i}"
+          class="no-spin${lFilled ? ' filled' : ''}" id="lec_${slugify(param)}_${i}"
           oninput="setLectura('${esc(param)}',${i},this.value)">
       </td>
       <td class="cell-in">
         <input type="number" step="any" value="${esc(r.mr)}" placeholder="MR (opt.)"
-          class="${r.mr.trim() ? 'filled' : ''}"
+          class="no-spin${r.mr.trim() ? ' filled' : ''}"
           oninput="setMR('${esc(param)}',${i},this.value)">
+      </td>
+      <td class="cell-in">
+        <input type="number" step="any" value="${esc(r.fd || '')}" placeholder="FD (opt.)"
+          class="no-spin${(r.fd||'').trim() ? ' filled' : ''}"
+          oninput="setFD('${esc(param)}',${i},this.value)">
       </td>
       ${extraTd}
       <td class="cell-st ${lFilled ? 'st-ok' : 'st-muted'}">${lFilled ? '✓' : '—'}</td>
@@ -135,11 +181,11 @@ function renderTable(param) {
     </div>
     <div class="data-wrap">
       <table>
-        <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th>${extraTh}<th>Estado</th></tr></thead>
+        <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th><th>FD</th>${extraTh}<th>Estado</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
     </div>
-    <div class="mr-note">* MR = Material de Referencia. Mínimo una fila por tabla debe tener MR.</div>
+    <div class="mr-note">* MR = Material de Referencia. FD = Factor de Dilución (opcional).</div>
   </div>`;
 }
 
@@ -157,6 +203,9 @@ function setMR(param, idx, val) {
   tableData[param][idx].mr = val;
   updateTableStatus(param);
   updateStatusBar();
+}
+function setFD(param, idx, val) {
+  tableData[param][idx].fd = val;
 }
 function setExtra(param, idx, col, val) {
   if (!tableData[param][idx].extra) tableData[param][idx].extra = {};
@@ -260,7 +309,7 @@ function exportTxt(record = null) {
   Object.entries(data).forEach(([param, rows]) => {
     txt += `PARÁMETRO: ${param}\n`;
     txt += '─'.repeat(48) + '\n';
-    const cols = ['Muestra', 'Lectura', 'MR', ...(ec[param] || [])];
+    const cols = ['Muestra', 'Lectura', 'MR', 'FD', ...(ec[param] || [])];
     txt += cols.map(c => c.padEnd(16)).join('') + '\n';
     txt += '─'.repeat(cols.length * 16) + '\n';
     rows.forEach(r => {
@@ -268,6 +317,7 @@ function exportTxt(record = null) {
         (r.subCode || '').padEnd(16),
         (r.lectura || '—').padEnd(16),
         (r.mr || '—').padEnd(16),
+        (r.fd || '—').padEnd(16),
         ...(ec[param] || []).map(col => (r.extra?.[col] || '—').padEnd(16))
       ];
       txt += vals.join('') + '\n';
@@ -418,13 +468,14 @@ function renderHistory() {
           <td>${esc(row.subCode || '')}</td>
           <td class="${row.lectura ? 'td-lec' : 'td-empty'}">${esc(row.lectura || '—')}</td>
           <td class="${row.mr ? 'td-mr' : 'td-empty'}">${esc(row.mr || '—')}</td>
+          <td class="${row.fd ? 'td-mr' : 'td-empty'}">${esc(row.fd || '—')}</td>
           ${ec.map(c => `<td>${esc(row.extra?.[c] || '—')}</td>`).join('')}
         </tr>`).join('');
       return `
         <div class="hist-param-title">▸ ${esc(param)}</div>
         <div style="overflow-x:auto">
           <table class="hist-table">
-            <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th>${extraTh}</tr></thead>
+            <thead><tr><th>Muestra</th><th>Lectura</th><th>MR</th><th>FD</th>${extraTh}</tr></thead>
             <tbody>${rowsHtml}</tbody>
           </table>
         </div>`;

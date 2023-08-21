@@ -270,7 +270,28 @@ header {
 @keyframes shimmer { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
 .skel-line { height: 11px; background: var(--border); border-radius: 4px; margin-bottom: 7px; }
 
-/* ── RESPONSIVE ── */
-@media(max-width:480px) {
+/* ── RESPONSIVE HEADER MOBILE ── */
+@media(max-width:600px) {
+  header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+  .header-nav {
+    gap: 4px;
+    flex-wrap: wrap;
+    width: 100%;
+    overflow: hidden;
+  }
+  .nav-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+  .btn-logout {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+  .user-badge { font-size: 9px; }
   .login-card { padding: 28px 20px; }
 }

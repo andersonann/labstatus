@@ -281,6 +281,11 @@ tbody tr:hover { background: rgba(0,212,255,.02); }
 .toast.err  { background: var(--red); color: #fff; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 
+/* Quitar spinners de inputs type=number */
+input.no-spin::-webkit-outer-spin-button,
+input.no-spin::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input.no-spin[type=number] { -moz-appearance: textfield; }
+
 /* ── PRINT ── */
 @media print {
   header, .btn-row, .top-bar button, .btn-addcol, .hist-section { display: none !important; }
