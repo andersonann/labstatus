@@ -26,11 +26,15 @@ function setSyncStatus(s) {
 }
 
 // ════════════════════════════════════════
-//  INIT — se llama desde initAuth() en auth.js
+//  INIT
 // ════════════════════════════════════════
-function init() {
+async function init() {
+  // primero cargamos el historial — lo necesitamos para pre-rellenar celdas
+  await loadHistory();
+
   const raw = sessionStorage.getItem('analyze_payload');
   if (!raw) {
+    // no vinimos desde "Analizar" — mostrar vacío
     showEmpty();
   } else {
     try {
@@ -39,7 +43,6 @@ function init() {
       else showEmpty();
     } catch(e) { showEmpty(); }
   }
-  loadHistory();
 }
 
 function showEmpty() {
@@ -78,22 +81,20 @@ function buildTables() {
   updateStatusBar();
 }
 
-// Busca en histRecords el registro más reciente que contenga
-// alguna de las muestras actuales y pre-rellena los inputs
+// recorre todo el historial (del más reciente al más antiguo) y va
+// rellenando solo los campos que aún estén vacíos — así si Zn ya
+// estaba en un registro anterior aparece pre-cargado
 function _restoreFromHistory() {
   if (!histRecords.length) return;
   const subIds = new Set(payload.map(s => s.subId));
 
-  // Recorrer del más reciente al más antiguo
   for (const rec of histRecords) {
-    let matched = false;
     Object.entries(rec.tableData || {}).forEach(([param, rows]) => {
       if (!tableData[param]) return;
       rows.forEach(hr => {
         if (!subIds.has(hr.subId)) return;
         const local = tableData[param].find(r => r.subId === hr.subId);
         if (!local) return;
-        // Solo pre-rellenar si el local está vacío
         if (!local.lectura && hr.lectura) local.lectura = hr.lectura;
         if (!local.mr      && hr.mr)      local.mr      = hr.mr;
         if (!local.fd      && hr.fd)      local.fd      = hr.fd;
@@ -102,16 +103,15 @@ function _restoreFromHistory() {
             if (!local.extra[k] && v) local.extra[k] = v;
           });
         }
-        matched = true;
       });
-      // Restaurar columnas extra
-      if (matched && rec.extraCols?.[param]) {
+      // restaurar columnas extra si existen
+      if (rec.extraCols?.[param]) {
         rec.extraCols[param].forEach(col => {
           if (!extraCols[param].includes(col)) extraCols[param].push(col);
         });
       }
     });
-    if (matched) break; // Usar solo el más reciente que coincida
+    // no hacemos break — seguimos para cubrir parámetros de otros registros
   }
 }
 
@@ -409,9 +409,9 @@ async function loadHistory() {
     });
     renderHistory();
   } catch(e) {
-    console.error('loadHistory error:', e);
+    console.error('error cargando historial:', e);
     document.getElementById('historyList').innerHTML =
-      '<div class="hist-empty">⚠ No se pudo cargar el historial. Verifica tu conexión o que la tabla analysis_history exista en Supabase.</div>';
+      '<div class="hist-empty">⚠ no se pudo cargar el historial</div>';
   }
 }
 
@@ -538,10 +538,17 @@ async function pushResultsAndBack() {
     showToast('⚠ No se pudo guardar en historial\n(los parámetros sí se marcarán)', true);
   }
 
+  // limpiar el payload para que al entrar a análisis sin seleccionar muestras no muestre nada
+  sessionStorage.removeItem('analyze_payload');
+
   setTimeout(() => { location.href = 'index.html'; }, 1300);
 }
 
-function goBack() { location.href = 'index.html'; }
+function goBack() {
+  // también limpiamos si sale sin guardar
+  sessionStorage.removeItem('analyze_payload');
+  location.href = 'index.html';
+}
 
 function clearData() {
   if (!confirm('¿Limpiar todos los datos ingresados?')) return;
@@ -571,7 +578,13 @@ function slugify(str) {
 //  ARRANQUE — espera a auth.js
 // ════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // initAuth viene de auth.js; cuando haya sesión (o no) llama init()
-  // El historial es público (lectura libre), pero guardar requiere login
   initAuth(init);
+
+  // fix 2 — el scroll del mouse no debería cambiar valores numéricos
+  // se pone en el documento porque los inputs se generan dinámicamente
+  document.addEventListener('wheel', e => {
+    if (document.activeElement?.type === 'number') {
+      document.activeElement.blur();
+    }
+  }, { passive: true });
 });

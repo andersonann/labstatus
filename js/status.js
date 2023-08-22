@@ -343,6 +343,7 @@ function updateBulkBar() {
 //  GO ANALYZE
 // ════════════════════════════════════════
 function goAnalyze() {
+  if (!requireAuth()) return; // analizar requiere estar logueado
   const selected = orders.filter(o => selectedIds.has(o.id));
   const payload  = selected.flatMap(o => o.subsamples.map(s => ({
     orderId:   o.id,

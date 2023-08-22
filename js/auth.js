@@ -94,6 +94,28 @@ function _updateUI() {
 }
 
 /* ────────────────────────────────────────
+   tema claro / oscuro
+   se guarda en localStorage para que persista
+──────────────────────────────────────── */
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('labstatus_theme', isLight ? 'light' : 'dark');
+  const btn = document.getElementById('btnTheme');
+  if (btn) btn.textContent = isLight ? '☀️' : '🌙';
+}
+
+function _applyStoredTheme() {
+  const saved = localStorage.getItem('labstatus_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+  }
+  // el botón puede no existir aún, se actualiza después en DOMContentLoaded
+}
+
+// aplicar tema inmediatamente al cargar el script — evita flash de modo oscuro
+_applyStoredTheme();
+
+/* ────────────────────────────────────────
    doLogin — lee el formulario de login
 ──────────────────────────────────────── */
 async function doLogin() {
@@ -155,6 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
     emailEl.addEventListener('keydown', e => {
       if (e.key === 'Enter') doLogin();
     });
+  }
+
+  // aplicar tema guardado antes de que se pinte nada
+  // (el body ya tiene la clase, aquí solo actualizamos el ícono del botón)
+  const btnTheme = document.getElementById('btnTheme');
+  if (btnTheme) {
+    btnTheme.textContent = document.body.classList.contains('light') ? '☀️' : '🌙';
   }
 
   // menú hamburguesa — solo aplica en móvil, en desktop no pasa nada

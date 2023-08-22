@@ -18,6 +18,25 @@
   --font-body: 'DM Sans', sans-serif;
 }
 
+/* modo claro — se activa con body.light */
+body.light {
+  --bg:       #f0f4f8;
+  --surface:  #ffffff;
+  --surface2: #e8edf3;
+  --border:   #c8d5e3;
+  --accent:   #0077aa;
+  --green:    #00875a;
+  --yellow:   #b86800;
+  --red:      #cc2222;
+  --text:     #0f172a;
+  --muted:    #64748b;
+}
+
+/* transición suave al cambiar de modo */
+*, *::before, *::after {
+  transition: background-color .2s, border-color .2s, color .15s;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
