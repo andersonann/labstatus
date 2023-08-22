@@ -51,24 +51,23 @@
 ════════════════════════════════════════ -->
 <div id="appRoot">
 
-  <!-- HEADER -->
+  <!-- header, igual que en index pero con la nav de análisis -->
   <header>
-    <div class="logo">◈ LABSTATUS</div>
+    <div class="logo" id="logoBtn">◈ LABSTATUS <span class="hamburger" id="hamburgerIcon">☰</span></div>
 
-    <div class="header-nav">
+    <div class="header-nav" id="headerNav">
       <button class="nav-btn" onclick="goBack()">← Muestras</button>
       <span class="nav-btn active">⚗ Análisis</span>
 
-      <!-- Botón Login (visible si NO está logueado) -->
+      <!-- aparece solo si no hay sesión -->
       <button class="nav-btn" id="btnLoginHeader"
         onclick="document.getElementById('loginScreen').classList.add('visible')"
-        style="display:none">
-        🔒 Ingresar
-      </button>
+        style="display:none">🔒 Ingresar</button>
 
-      <!-- Badge de usuario + Logout (visibles si está logueado) -->
-      <span class="user-badge" id="userBadge" style="display:none"></span>
-      <button class="btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">Salir</button>
+      <!-- nombre + salir juntos -->
+      <button class="btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">
+        <span id="userBadge"></span> · Salir
+      </button>
     </div>
   </header>
 

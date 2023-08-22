@@ -61,33 +61,23 @@ function _applySession(session) {
    y visibilidad de controles de escritura
 ──────────────────────────────────────── */
 function _updateUI() {
-  // Badge de usuario en header
-  const badge = document.getElementById('userBadge');
-  if (badge) {
-    if (authState.isLoggedIn) {
-      const email = authState.user.email;
-      const short = email.split('@')[0];
-      badge.innerHTML = `<span>${short}</span>`;
-      badge.style.display = 'flex';
-    } else {
-      badge.style.display = 'none';
-    }
-  }
-
-  // Botón logout
   const logoutBtn = document.getElementById('btnLogout');
-  if (logoutBtn) {
-    logoutBtn.style.display = authState.isLoggedIn ? '' : 'none';
+  const loginBtn  = document.getElementById('btnLoginHeader');
+  const badge     = document.getElementById('userBadge');
+
+  if (authState.isLoggedIn) {
+    // mostramos el nombre corto dentro del botón salir
+    const short = authState.user.email.split('@')[0];
+    if (badge)     badge.textContent = short;
+    if (logoutBtn) logoutBtn.style.display = '';
+    if (loginBtn)  loginBtn.style.display  = 'none';
+  } else {
+    if (badge)     badge.textContent = '';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (loginBtn)  loginBtn.style.display  = '';
   }
 
-  // Botón login (aparece si NO está logueado)
-  const loginBtn = document.getElementById('btnLoginHeader');
-  if (loginBtn) {
-    loginBtn.style.display = authState.isLoggedIn ? 'none' : '';
-  }
-
-  // Controles de escritura: formulario add, botones de edición/borrado
-  // Se marcan con class="requires-auth" y se ocultan/deshabilitan
+  // controles de escritura — se bloquean si no hay sesión
   document.querySelectorAll('.requires-auth').forEach(el => {
     if (authState.isLoggedIn) {
       el.classList.remove('locked');
@@ -97,7 +87,7 @@ function _updateUI() {
     }
   });
 
-  // Aviso "Inicia sesión para editar" — visible solo si no logueado
+  // aviso de solo lectura
   document.querySelectorAll('.auth-notice').forEach(el => {
     el.style.display = authState.isLoggedIn ? 'none' : '';
   });
@@ -166,4 +156,27 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Enter') doLogin();
     });
   }
+
+  // menú hamburguesa — solo aplica en móvil, en desktop no pasa nada
+  const logoBtn  = document.getElementById('logoBtn');
+  const headerNav = document.getElementById('headerNav');
+  const hamburgerIcon = document.getElementById('hamburgerIcon');
+
+  if (logoBtn && headerNav) {
+    logoBtn.addEventListener('click', () => {
+      // si estamos en desktop (nav siempre visible) no hacemos nada
+      if (window.innerWidth > 600) return;
+      const isOpen = headerNav.classList.toggle('open');
+      if (hamburgerIcon) hamburgerIcon.textContent = isOpen ? '✕' : '☰';
+    });
+  }
+
+  // cerrar el menú si se hace click fuera
+  document.addEventListener('click', e => {
+    if (window.innerWidth > 600) return;
+    if (!e.target.closest('header')) {
+      headerNav?.classList.remove('open');
+      if (hamburgerIcon) hamburgerIcon.textContent = '☰';
+    }
+  });
 });

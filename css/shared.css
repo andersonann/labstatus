@@ -271,27 +271,50 @@ header {
 .skel-line { height: 11px; background: var(--border); border-radius: 4px; margin-bottom: 7px; }
 
 /* ── RESPONSIVE HEADER MOBILE ── */
+
+/* el ☰ solo se ve en móvil */
+.hamburger { display: none; font-size: 16px; margin-left: 8px; }
+.logo { cursor: default; }
+
 @media(max-width:600px) {
+  .logo { cursor: pointer; user-select: none; }
+  .hamburger { display: inline; }
+
   header {
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 0;
     padding: 10px 14px;
+    position: relative;
   }
+
+  /* el nav se oculta por defecto en móvil */
   .header-nav {
-    gap: 4px;
-    flex-wrap: wrap;
+    display: none;
+    flex-direction: column;
     width: 100%;
-    overflow: hidden;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
   }
+
+  /* cuando tiene .open se muestra */
+  .header-nav.open { display: flex; }
+
+  .header-stats { display: none; }
+
   .nav-btn {
-    padding: 5px 8px;
-    font-size: 10px;
+    padding: 9px 12px;
+    font-size: 11px;
     letter-spacing: 0;
+    text-align: left;
+    width: 100%;
   }
   .btn-logout {
-    padding: 4px 8px;
-    font-size: 10px;
+    padding: 9px 12px;
+    font-size: 11px;
+    text-align: left;
+    width: 100%;
   }
-  .user-badge { font-size: 9px; }
   .login-card { padding: 28px 20px; }
 }

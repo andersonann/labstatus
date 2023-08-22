@@ -36,22 +36,24 @@
 ════════════════════════════════════════ -->
 <div id="appRoot" style="display:none">
 
-  <!-- HEADER -->
+  <!-- header principal -->
   <header>
-    <div class="logo">◈ LABSTATUS</div>
+    <!-- el logo en móvil sirve para abrir/cerrar el nav -->
+    <div class="logo" id="logoBtn">◈ LABSTATUS <span class="hamburger" id="hamburgerIcon">☰</span></div>
 
-    <div class="header-nav">
+    <div class="header-nav" id="headerNav">
       <button class="nav-btn active">Muestras</button>
       <button class="nav-btn" onclick="location.href='analysis.html'">⚗ Análisis</button>
 
-      <!-- Botón Login (visible si NO está logueado) -->
-      <button class="nav-btn" id="btnLoginHeader" onclick="document.getElementById('loginScreen').classList.add('visible')" style="display:none">
-        🔒 Ingresar
-      </button>
+      <!-- aparece solo si no hay sesión -->
+      <button class="nav-btn" id="btnLoginHeader"
+        onclick="document.getElementById('loginScreen').classList.add('visible')"
+        style="display:none">🔒 Ingresar</button>
 
-      <!-- Badge de usuario + Logout (visibles si está logueado) -->
-      <span class="user-badge" id="userBadge" style="display:none"></span>
-      <button class="btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">Salir</button>
+      <!-- el nombre del usuario va adentro del botón salir, más limpio -->
+      <button class="btn-logout" id="btnLogout" onclick="doLogout()" style="display:none">
+        <span id="userBadge"></span> · Salir
+      </button>
     </div>
 
     <div class="header-stats">
